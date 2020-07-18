@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Barcode</string>
+    <string name="settings">Settings</string>
+    <string name="checked_in">Checked In:</string>
+    <string name="auto_checking">Auto Checking</string>
+    <string name="flash">Flash</string>
+    <string name="last_check">Last Check:</string>
+    <string name="ticket_no">Ticket No.</string>
+    <string name="type">Type</string>
+    <string name="checking">Checking</string>
+    <string name="checked">Checked</string>
+    <string name="mannual">Mannual</string>
+</resources>
