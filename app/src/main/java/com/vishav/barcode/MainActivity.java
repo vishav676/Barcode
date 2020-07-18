@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -25,7 +24,6 @@ import android.os.Bundle;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +50,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "My Tag";
+    private static final String ErrorTAG = "Error";
     boolean isDetected = false;
     TextView ticketNo;
     Switch flash;
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseVisionBarcodeDetector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
-    Set<String> result = new ArraySet<String>();
+    Set<String> result = new ArraySet<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,14 +81,11 @@ public class MainActivity extends AppCompatActivity {
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         setupCamera();
                         boolean hasFlash = getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
-                        flash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                                if(hasFlash)
-                                    camera.getCameraControl().enableTorch(b);
-                                else
-                                    Toast.makeText(getApplicationContext(),"Flash Not Available",Toast.LENGTH_SHORT).show();
-                            }
+                        flash.setOnCheckedChangeListener((compoundButton, b) -> {
+                            if(hasFlash)
+                                camera.getCameraControl().enableTorch(b);
+                            else
+                                Toast.makeText(getApplicationContext(),"Flash Not Available",Toast.LENGTH_SHORT).show();
                         });
                     }
                     @Override
@@ -112,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
                 bindPreview(cameraProvider);
             } catch (ExecutionException | InterruptedException e){
-
+                Log.e(ErrorTAG, "setupCamera: ", e);
             }
         }, ContextCompat.getMainExecutor(getApplicationContext()));
     }
@@ -193,13 +189,10 @@ public class MainActivity extends AppCompatActivity {
                     time.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cardView.setVisibility(View.INVISIBLE);
-                                    result.add(barcode.getRawValue());
-                                    Log.d(TAG, String.valueOf(result));
-                                }
+                            runOnUiThread(() -> {
+                                cardView.setVisibility(View.INVISIBLE);
+                                result.add(barcode.getRawValue());
+                                Log.d(TAG, String.valueOf(result));
                             });
                         }
                     },3000);
