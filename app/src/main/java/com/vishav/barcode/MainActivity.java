@@ -1,6 +1,17 @@
 package com.vishav.barcode;
 
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.media.Image;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,20 +24,6 @@ import androidx.camera.view.PreviewView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-
-import android.content.pm.PackageManager;
-import android.media.Image;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.ArraySet;
-import android.util.Log;
-import android.view.View;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -41,8 +38,10 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -55,14 +54,15 @@ public class MainActivity extends AppCompatActivity {
     TextView ticketNo;
     Switch flash;
     CardView cardView;
-    TextView tvName, tvType, tvNo;
+    TextView tvName, tvType, tvNo,tv_lastCheck;
     PreviewView cameraPreview;
     Camera camera;
+    Calendar calendar;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
-    Set<String> result = new ArraySet<>();
+    List<String> result = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,11 +74,15 @@ public class MainActivity extends AppCompatActivity {
         tvNo = cardView.findViewById(R.id.tvType);
         tvType = cardView.findViewById(R.id.number);
         flash = findViewById(R.id.toggle_flash);
+        tv_lastCheck = findViewById(R.id.last_check);
+        calendar = Calendar.getInstance();
         Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
                     @RequiresApi(api = Build.VERSION_CODES.P)
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if(result.size() == 0)
+                            tv_lastCheck.setText("---");
                         setupCamera();
                         boolean hasFlash = getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
                         flash.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -174,6 +178,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    private void trackHistory()
+    {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat currentDate = new SimpleDateFormat("HH:mm:ss a");
+        String time = currentDate.format(calendar.getTime());
+        result.add(time);
+        Toast.makeText(this,time,Toast.LENGTH_SHORT).show();
+
+    }
+
     private void processResult(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
         if (firebaseVisionBarcodes.size()>0)
         {
@@ -191,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             runOnUiThread(() -> {
                                 cardView.setVisibility(View.INVISIBLE);
-                                result.add(barcode.getRawValue());
+                                trackHistory();
                                 Log.d(TAG, String.valueOf(result));
                             });
                         }

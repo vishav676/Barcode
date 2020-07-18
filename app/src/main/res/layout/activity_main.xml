@@ -98,6 +98,7 @@
             <TextView
                 android:textColor="#000"
                 android:layout_width="0dp"
+                android:id="@+id/last_check"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:gravity="center"
