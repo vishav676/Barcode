@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -17,6 +18,7 @@ import androidx.lifecycle.LifecycleOwner;
 import android.Manifest;
 import android.annotation.SuppressLint;
 
+import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -78,15 +81,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         setupCamera();
+                        boolean hasFlash = getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
                         flash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                                if (b){
+                                if(hasFlash)
                                     camera.getCameraControl().enableTorch(b);
-                                }
-                                else {
-                                    camera.getCameraControl().enableTorch(b);
-                                }
+                                else
+                                    Toast.makeText(getApplicationContext(),"Flash Not Available",Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
