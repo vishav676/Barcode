@@ -10,4 +10,7 @@
     <string name="checking">Checking</string>
     <string name="checked">Checked</string>
     <string name="mannual">Mannual</string>
+    <string name="accept">Accept</string>
+    <string name="number">Number :</string>
+    <string name="name">Name :</string>
 </resources>
