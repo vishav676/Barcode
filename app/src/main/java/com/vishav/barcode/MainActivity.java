@@ -3,6 +3,7 @@ package com.vishav.barcode;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Build;
@@ -10,11 +11,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
@@ -43,7 +46,10 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -64,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseVisionBarcodeDetector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
-    List<String> result = new ArrayList<>();
+    HashMap<String, String> result = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +113,16 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.settings, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_history){
+            Intent intent = new Intent(this, history.class);
+            intent.putExtra("history_list", result);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -189,13 +205,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void trackHistory()
+    private String trackHistory()
     {
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat currentDate = new SimpleDateFormat("HH:mm:ss a");
-        String time = currentDate.format(calendar.getTime());
-        result.add(time);
-        Toast.makeText(this,time,Toast.LENGTH_SHORT).show();
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat currentDate = new SimpleDateFormat("HH:mm:ss a",
+                Locale.ENGLISH);
+        return currentDate.format(date);
 
     }
 
@@ -208,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                 int value_type = barcode.getValueType();
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
                     ticketNo.setText(barcode.getRawValue());
-                    result.add(barcode.getRawValue());
+                    result.put(barcode.getRawValue(), trackHistory());
                     cardView.setVisibility(View.VISIBLE);
                     Timer time = new Timer();
                     time.schedule(new TimerTask() {
@@ -216,8 +231,7 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             runOnUiThread(() -> {
                                 cardView.setVisibility(View.INVISIBLE);
-                                trackHistory();
-                                Log.d(TAG, String.valueOf(result));
+
                             });
                         }
                     },3000);
