@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     Calendar calendar;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
+    ArrayList<String> cardNo = new ArrayList<>();
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
     HashMap<String, String> result = new HashMap<>();
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         flash = findViewById(R.id.toggle_flash);
         tv_lastCheck = findViewById(R.id.last_check);
         calendar = Calendar.getInstance();
+        makelist();
         Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
                     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -106,6 +108,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).check();
 
+    }
+
+    public void makelist(){
+        for(int i =0; i<10; i++)
+        {
+            cardNo.add("ELB" + i);
+        }
     }
 
     @Override
@@ -222,20 +231,26 @@ public class MainActivity extends AppCompatActivity {
             {
                 int value_type = barcode.getValueType();
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
-                    ticketNo.setText(barcode.getRawValue());
-                    result.put(barcode.getRawValue(), trackHistory());
-                    cardView.setVisibility(View.VISIBLE);
-                    Timer time = new Timer();
-                    time.schedule(new TimerTask() {
+
+                    if(cardNo.contains(barcode.getRawValue())){
+                        result.put(barcode.getRawValue(), trackHistory());
+                        cardView.setVisibility(View.VISIBLE);
+                        Timer time = new Timer();
+                        time.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            runOnUiThread(() -> {
-                                cardView.setVisibility(View.INVISIBLE);
+                                runOnUiThread(() -> {
+                                    cardView.setVisibility(View.INVISIBLE);
 
-                            });
+                                });
                         }
-                    },3000);
-                    tvName.setText(barcode.getRawValue());
+                        },3000);
+                        tvName.setText(barcode.getRawValue());
+                    }
+                    else
+                    {
+                        Toast.makeText(this,"No Such ELB/Ticket exists", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
             isDetected = false;
