@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
+import android.hardware.camera2.*;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
@@ -62,10 +63,12 @@ public class MainActivity extends AppCompatActivity {
     TextView ticketNo;
     Switch flash;
     CardView cardView;
-    TextView tvName, tvType, tvNo,tv_lastCheck;
+    TextView tvName, tvType, tvNo,tv_lastCheck, errorNum, issue, errorDetail;
     PreviewView cameraPreview;
     Camera camera;
     Calendar calendar;
+    CardView error_cardView;
+    ProcessCameraProvider cameraProvider;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     ArrayList<String> cardNo = new ArrayList<>();
@@ -79,11 +82,15 @@ public class MainActivity extends AppCompatActivity {
         ticketNo = (TextView)findViewById(R.id.ticket_num);
         cameraPreview = (PreviewView) findViewById(R.id.CameraViewid);
         cardView = findViewById(R.id.barcode_result);
+        error_cardView = findViewById(R.id.barcode_error);
         tvName = cardView.findViewById(R.id.tvname);
         tvNo = cardView.findViewById(R.id.tvType);
         tvType = cardView.findViewById(R.id.number);
         flash = findViewById(R.id.toggle_flash);
+        errorNum = findViewById(R.id.errorNum);
+        issue = findViewById(R.id.issueTv);
         tv_lastCheck = findViewById(R.id.last_check);
+        errorDetail = findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
         makelist();
         Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
@@ -140,12 +147,14 @@ public class MainActivity extends AppCompatActivity {
         cameraProviderFuture = ProcessCameraProvider.getInstance(getApplicationContext());
         cameraProviderFuture.addListener(()->{
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                cameraProvider = cameraProviderFuture.get();
                 options = new FirebaseVisionBarcodeDetectorOptions.Builder()
                         .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
                         .build();
                 detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
                 bindPreview(cameraProvider);
+
+
             } catch (ExecutionException | InterruptedException e){
                 Log.e(ErrorTAG, "setupCamera: ", e);
             }
@@ -157,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
     {
         Preview preview = new Preview.Builder()
                 .build();
-
         CameraSelector cameraSelector  = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build();
@@ -179,10 +187,12 @@ public class MainActivity extends AppCompatActivity {
                     processImage(fromMediaImage);
                 }
             }
+
             image.close();
         });
 
         preview.setSurfaceProvider(cameraPreview.createSurfaceProvider());
+
         camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,preview,imageAnalysis);
     }
 
@@ -223,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     private void processResult(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
         if (firebaseVisionBarcodes.size()>0)
         {
@@ -232,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                 int value_type = barcode.getValueType();
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
 
-                    if(cardNo.contains(barcode.getRawValue())){
+                    if(cardNo.contains(barcode.getRawValue()) && !result.containsKey(barcode.getRawValue())){
                         result.put(barcode.getRawValue(), trackHistory());
                         cardView.setVisibility(View.VISIBLE);
                         Timer time = new Timer();
@@ -249,7 +260,27 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(this,"No Such ELB/Ticket exists", Toast.LENGTH_LONG).show();
+                        error_cardView.setVisibility(View.VISIBLE);
+                        Timer time = new Timer();
+                        if (!cardNo.contains((barcode.getRawValue())))
+                        {
+                            issue.setText("Ticket Number not in the list");
+                            errorNum.setText(barcode.getRawValue());
+                        }
+                        else if(result.containsKey(barcode.getRawValue())){
+                            issue.setText("Already used");
+                            errorDetail.setText(result.get(barcode.getRawValue()));
+                            errorNum.setText(barcode.getRawValue());
+                        }
+                        time.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                runOnUiThread(() -> {
+                                    error_cardView.setVisibility(View.INVISIBLE);
+
+                                });
+                            }
+                        },3000);
                     }
                 }
             }
