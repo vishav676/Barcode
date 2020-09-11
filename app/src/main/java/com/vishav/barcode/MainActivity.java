@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isDetected = false;
     TextView ticketNo;
     Switch flash;
+    ImageAnalysis imageAnalysis;
     CardView cardView;
     TextView tvName, tvType, tvNo,tv_lastCheck, errorNum, issue, errorDetail;
     PreviewView cameraPreview;
@@ -170,10 +171,18 @@ public class MainActivity extends AppCompatActivity {
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build();
 
-        ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+         imageAnalysis = new ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
+        configImageAnaylsis();
+
+        preview.setSurfaceProvider(cameraPreview.createSurfaceProvider());
+
+        camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,preview,imageAnalysis);
+    }
+
+    private void configImageAnaylsis(){
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), image -> {
             @SuppressLint("UnsafeExperimentalUsageError") Image media = image.getImage();
             if(media!=null) {
@@ -190,10 +199,6 @@ public class MainActivity extends AppCompatActivity {
 
             image.close();
         });
-
-        preview.setSurfaceProvider(cameraPreview.createSurfaceProvider());
-
-        camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,preview,imageAnalysis);
     }
 
     private void processImage(FirebaseVisionImage visionImageFromFrame) {
@@ -244,24 +249,16 @@ public class MainActivity extends AppCompatActivity {
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
 
                     if(cardNo.contains(barcode.getRawValue()) && !result.containsKey(barcode.getRawValue())){
+                        imageAnalysis.clearAnalyzer();
                         result.put(barcode.getRawValue(), trackHistory());
                         cardView.setVisibility(View.VISIBLE);
-                        Timer time = new Timer();
-                        time.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                                runOnUiThread(() -> {
-                                    cardView.setVisibility(View.INVISIBLE);
-
-                                });
-                        }
-                        },3000);
+                        delay(cardView);
                         tvName.setText(barcode.getRawValue());
                     }
                     else
                     {
                         error_cardView.setVisibility(View.VISIBLE);
-                        Timer time = new Timer();
+                        imageAnalysis.clearAnalyzer();
                         if (!cardNo.contains((barcode.getRawValue())))
                         {
                             issue.setText("Ticket Number not in the list");
@@ -272,15 +269,7 @@ public class MainActivity extends AppCompatActivity {
                             errorDetail.setText(result.get(barcode.getRawValue()));
                             errorNum.setText(barcode.getRawValue());
                         }
-                        time.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                runOnUiThread(() -> {
-                                    error_cardView.setVisibility(View.INVISIBLE);
-
-                                });
-                            }
-                        },3000);
+                        delay(error_cardView);
                     }
                 }
             }
@@ -288,6 +277,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void delay(CardView cardView){
+        Timer time = new Timer();
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    cardView.setVisibility(View.INVISIBLE);
+
+                });
+            }
+        },3000);
+    }
 
     @Override
     protected void onDestroy() {
