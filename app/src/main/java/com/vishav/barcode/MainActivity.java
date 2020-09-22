@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -247,18 +248,18 @@ public class MainActivity extends AppCompatActivity {
             {
                 int value_type = barcode.getValueType();
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
-
+                    imageAnalysis.clearAnalyzer();
                     if(cardNo.contains(barcode.getRawValue()) && !result.containsKey(barcode.getRawValue())){
-                        imageAnalysis.clearAnalyzer();
                         result.put(barcode.getRawValue(), trackHistory());
                         cardView.setVisibility(View.VISIBLE);
                         delay(cardView);
                         tvName.setText(barcode.getRawValue());
+                        delay();
+
                     }
                     else
                     {
                         error_cardView.setVisibility(View.VISIBLE);
-                        imageAnalysis.clearAnalyzer();
                         if (!cardNo.contains((barcode.getRawValue())))
                         {
                             issue.setText("Ticket Number not in the list");
@@ -270,12 +271,24 @@ public class MainActivity extends AppCompatActivity {
                             errorNum.setText(barcode.getRawValue());
                         }
                         delay(error_cardView);
+                        delay();
+
                     }
                 }
             }
             isDetected = false;
         }
     }
+    private void delay(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                    configImageAnaylsis();
+            }
+        },5000);
+    }
+
 
     private void delay(CardView cardView){
         Timer time = new Timer();
@@ -284,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 runOnUiThread(() -> {
                     cardView.setVisibility(View.INVISIBLE);
-
                 });
             }
         },3000);
