@@ -1,6 +1,8 @@
 package com.vishav.barcode;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -40,17 +42,18 @@ public class dbHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + checkingTable +
-                " (" +checkingID + "INTEGER PRIMARY KEY, " +
+                " (" +checkingID + " INTEGER PRIMARY KEY, " +
                 checkingName + " TEXT," +
                 checkingTime + " TIMESTAMP," +
                 checkingDate + " DATE)");
 
         sqLiteDatabase.execSQL("CREATE TABLE " + scanningTable +
-                " (" +scanningID + "INTEGER PRIMARY KEY, " +
-                scanningCheckedManualy + "BOOLEAN" +
+                " (" +scanningID + " INTEGER PRIMARY KEY, " +
+                scanningCheckedManualy + " BOOLEAN," +
                 scanningNote + " TEXT," +
                 scanningIssue + " TEXT," +
                 scanningStatus + " BOOLEAN,"+
+                scanningCheckingID + " INTEGER,"+
                 scanningTime + " TIMESTAMP, FOREIGN KEY (" + scanningCheckingID +
                 ") REFERENCES "+ checkingTable + " ("+ checkingID +"));");
 
@@ -66,7 +69,34 @@ public class dbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        sqLiteDatabase.execSQL("Drop TABLE IF EXISTS "+ scanningTable);
+        sqLiteDatabase.execSQL("Drop TABLE IF EXISTS " + checkingTable);
+        sqLiteDatabase.execSQL("Drop TABLE IF EXISTS " + ticketTable);
+        onCreate(sqLiteDatabase);
+    }
 
+    public void insertTicket(Ticket ticket ){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ticketNumber, ticket.getTicketNumber());
+        contentValues.put(ticketCustomerName, ticket.getCustomerName());
+        contentValues.put(ticketInfo, ticket.getInfo());
+        contentValues.put(ticketWarningNote, ticket.getWarningNote());
+        contentValues.put(ticketUseable, ticket.getUseable());
+        contentValues.put(ticketWarning, ticket.getWarning());
+        db.insert(ticketTable,null, contentValues);
+    }
+    public Boolean searchTicket(String checkTicketNumber){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select * from " + ticketTable+ " where " + ticketNumber +" like '" + checkTicketNumber +"%'";
+
+        Cursor cursor = db.rawQuery(query,null);
+        if (cursor.getCount()<=0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 }
 

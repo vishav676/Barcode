@@ -113,7 +113,7 @@
             <TextView
                 android:textColor="#000"
                 android:layout_width="0dp"
-                android:id="@+id/ticket_num"
+                android:id="@+id/ticketNumber"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:gravity="center" />
@@ -133,11 +133,11 @@
 
             <TextView
                 android:textColor="#000"
+                android:id="@+id/ticketType"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:gravity="center"
-                android:text="Pre sale" />
+                android:gravity="center" />
         </LinearLayout>
     </LinearLayout>
 

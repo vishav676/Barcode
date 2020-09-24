@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "My Tag";
     private static final String ErrorTAG = "Error";
     boolean isDetected = false;
-    TextView ticketNo;
+    TextView ticketNum,ticketType;
     Switch flash;
     ImageAnalysis imageAnalysis;
     CardView cardView;
@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
     ProcessCameraProvider cameraProvider;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
-    ArrayList<String> cardNo = new ArrayList<>();
+    ArrayList<Ticket> cardNo = new ArrayList<>();
+    dbHelper db = new dbHelper(this);
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
     HashMap<String, String> result = new HashMap<>();
@@ -81,12 +82,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ticketNo = (TextView)findViewById(R.id.ticket_num);
+
         cameraPreview = (PreviewView) findViewById(R.id.CameraViewid);
         cardView = findViewById(R.id.barcode_result);
         error_cardView = findViewById(R.id.barcode_error);
         tvName = cardView.findViewById(R.id.tvname);
         tvNo = cardView.findViewById(R.id.tvType);
+        ticketNum = findViewById(R.id.ticketNumber);
+        ticketType = findViewById(R.id.ticketType);
         tvType = cardView.findViewById(R.id.number);
         flash = findViewById(R.id.toggle_flash);
         errorNum = findViewById(R.id.errorNum);
@@ -95,20 +98,22 @@ public class MainActivity extends AppCompatActivity {
         errorDetail = findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
         makelist();
-        Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
+        Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
                     @RequiresApi(api = Build.VERSION_CODES.P)
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if(result.size() == 0)
-                            tv_lastCheck.setText("---");
+
                         setupCamera();
-                        boolean hasFlash = getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+                        boolean hasFlash = getApplicationContext().getPackageManager().
+                                hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
                         flash.setOnCheckedChangeListener((compoundButton, b) -> {
                             if(hasFlash)
                                 camera.getCameraControl().enableTorch(b);
                             else
-                                Toast.makeText(getApplicationContext(),"Flash Not Available",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),"Flash Not Available",
+                                        Toast.LENGTH_SHORT).show();
                         });
                     }
                     @Override
@@ -122,7 +127,15 @@ public class MainActivity extends AppCompatActivity {
     public void makelist(){
         for(int i =0; i<10; i++)
         {
-            cardNo.add("ELB" + i);
+            Ticket ticket = new Ticket("ELB1","Vishav","2 more",
+                    "Employee",2,"none");
+            db.insertTicket(ticket);
+            cardNo.add(new Ticket("ELB"+i,
+                    "Vishav",
+                    "Boat Party",
+                    "guest 2",
+                    1,
+                    "Employee"));
         }
     }
 
@@ -180,7 +193,8 @@ public class MainActivity extends AppCompatActivity {
 
         preview.setSurfaceProvider(cameraPreview.createSurfaceProvider());
 
-        camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,cameraSelector,preview,imageAnalysis);
+        camera = cameraProvider.bindToLifecycle((LifecycleOwner)this
+                ,cameraSelector,preview,imageAnalysis);
     }
 
     private void configImageAnaylsis(){
@@ -192,8 +206,10 @@ public class MainActivity extends AppCompatActivity {
                     for (Image.Plane plane1 : plane) {
                         plane1.getBuffer().rewind();
                     }
-                    int rotation = degreeToFirebaseRotation(image.getImageInfo().getRotationDegrees());
-                    FirebaseVisionImage fromMediaImage = FirebaseVisionImage.fromMediaImage(media, rotation);
+                    int rotation = degreeToFirebaseRotation(image.getImageInfo()
+                            .getRotationDegrees());
+                    FirebaseVisionImage fromMediaImage = FirebaseVisionImage
+                            .fromMediaImage(media, rotation);
                     processImage(fromMediaImage);
                 }
             }
@@ -249,18 +265,21 @@ public class MainActivity extends AppCompatActivity {
                 int value_type = barcode.getValueType();
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
                     imageAnalysis.clearAnalyzer();
-                    if(cardNo.contains(barcode.getRawValue()) && !result.containsKey(barcode.getRawValue())){
-                        result.put(barcode.getRawValue(), trackHistory());
+                    if(db.searchTicket(barcode.getRawValue())
+                            && !result.containsKey(barcode.getRawValue())){
+                        String time = trackHistory();
+                        result.put(barcode.getRawValue(), time);
                         cardView.setVisibility(View.VISIBLE);
                         delay(cardView);
+                        ticketNum.setText(barcode.getRawValue());
                         tvName.setText(barcode.getRawValue());
+                        tv_lastCheck.setText(time);
                         delay();
-
                     }
                     else
                     {
                         error_cardView.setVisibility(View.VISIBLE);
-                        if (!cardNo.contains((barcode.getRawValue())))
+                        if (!db.searchTicket(barcode.getRawValue()))
                         {
                             issue.setText("Ticket Number not in the list");
                             errorNum.setText(barcode.getRawValue());
@@ -274,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
                         delay();
 
                     }
+
                 }
             }
             isDetected = false;
