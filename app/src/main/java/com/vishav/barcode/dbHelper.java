@@ -31,6 +31,7 @@ public class dbHelper extends SQLiteOpenHelper{
     static final String ticketNumber = "ticketNumber";
     static final String ticketCustomerName = "CustomerName";
     static final String ticketInfo = "OrderInfo";
+    static final String ticketEvent = "TicketType";
     static final String ticketWarning = "Warning";
     static final String ticketWarningNote = "WarningNote";
     static final String ticketUseable = "Useable";
@@ -42,13 +43,13 @@ public class dbHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + checkingTable +
-                " (" +checkingID + " INTEGER PRIMARY KEY, " +
+                " (" +checkingID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 checkingName + " TEXT," +
                 checkingTime + " TIMESTAMP," +
                 checkingDate + " DATE)");
 
         sqLiteDatabase.execSQL("CREATE TABLE " + scanningTable +
-                " (" +scanningID + " INTEGER PRIMARY KEY, " +
+                " (" +scanningID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 scanningCheckedManualy + " BOOLEAN," +
                 scanningNote + " TEXT," +
                 scanningIssue + " TEXT," +
@@ -58,13 +59,21 @@ public class dbHelper extends SQLiteOpenHelper{
                 ") REFERENCES "+ checkingTable + " ("+ checkingID +"));");
 
         sqLiteDatabase.execSQL("CREATE TABLE " + ticketTable +
-                " (" +ticketId + "INTEGER PRIMARY KEY, " +
+                " (" +ticketId + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ticketNumber + " TEXT," +
                 ticketCustomerName + " TEXT," +
                 ticketInfo + " TEXT," +
                 ticketWarningNote + " TEXT," +
                 ticketUseable + " INTEGER," +
-                ticketWarning + " TEXT)");
+                ticketEvent + " INTEGER, "+
+                ticketWarning + " TEXT," +
+                        " FOREIGN KEY ("+ ticketEvent +") REFERENCES "+ checkingTable + " ("+checkingID+"));"
+                );
+
+        sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Boat Party', '6:00 PM', '2 Oct 2020')");
+        sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Welcome Party', '6:00 PM', '8 Sept 2020')");
+        sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Morison Party', '6:00 PM', '30 Sept 2020')");
+
     }
 
     @Override
@@ -84,6 +93,7 @@ public class dbHelper extends SQLiteOpenHelper{
         contentValues.put(ticketWarningNote, ticket.getWarningNote());
         contentValues.put(ticketUseable, ticket.getUseable());
         contentValues.put(ticketWarning, ticket.getWarning());
+        contentValues.put(ticketEvent, ticket.getTicketEvent());
         db.insert(ticketTable,null, contentValues);
     }
     public Boolean searchTicket(String checkTicketNumber){
@@ -98,5 +108,20 @@ public class dbHelper extends SQLiteOpenHelper{
         cursor.close();
         return true;
     }
+    public String getEventInfo(String ticketNo){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select "+ checkingName + " from " + checkingTable + " inner join "  + ticketTable +" on " + checkingID +" = " + ticketEvent +" where " + ticketNumber +" like '" + ticketNo +"%'";
+
+        Cursor cursor = db.rawQuery(query,null);
+        if (cursor != null){
+            cursor.moveToFirst();
+        }
+        assert cursor != null;
+        String result = cursor.getString(cursor.getColumnIndex(checkingName));
+        cursor.close();
+        return result;
+    }
+
+
 }
 

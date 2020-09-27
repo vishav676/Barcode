@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     ProcessCameraProvider cameraProvider;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
-    ArrayList<Ticket> cardNo = new ArrayList<>();
+
     dbHelper db = new dbHelper(this);
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
@@ -127,15 +128,10 @@ public class MainActivity extends AppCompatActivity {
     public void makelist(){
         for(int i =0; i<10; i++)
         {
-            Ticket ticket = new Ticket("ELB1","Vishav","2 more",
-                    "Employee",2,"none");
+            Random rand = new Random();
+            Ticket ticket = new Ticket("ELB"+i,"Customer "+i,"2 more",
+                    "Employee",2,"none",rand.nextInt(3)+1);
             db.insertTicket(ticket);
-            cardNo.add(new Ticket("ELB"+i,
-                    "Vishav",
-                    "Boat Party",
-                    "guest 2",
-                    1,
-                    "Employee"));
         }
     }
 
@@ -274,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                         ticketNum.setText(barcode.getRawValue());
                         tvName.setText(barcode.getRawValue());
                         tv_lastCheck.setText(time);
+                        ticketType.setText(db.getEventInfo(barcode.getRawValue()));
                         delay();
                     }
                     else
