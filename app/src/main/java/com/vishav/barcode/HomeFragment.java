@@ -43,6 +43,7 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.vishav.barcode.Interfaces.OnFragmentInteraction;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -87,21 +88,21 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View v = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        cameraPreview = (PreviewView) v.findViewById(R.id.CameraViewid);
-        cardView = v.findViewById(R.id.barcode_result);
-        error_cardView = v.findViewById(R.id.barcode_error);
+        cameraPreview = (PreviewView) view.findViewById(R.id.CameraViewid);
+        cardView = view.findViewById(R.id.barcode_result);
+        error_cardView = view.findViewById(R.id.barcode_error);
         tvName = cardView.findViewById(R.id.tvname);
         tvNo = cardView.findViewById(R.id.tvType);
-        ticketNum = v.findViewById(R.id.ticketNumber);
-        ticketType = v.findViewById(R.id.ticketType);
+        ticketNum = view.findViewById(R.id.ticketNumber);
+        ticketType = view.findViewById(R.id.ticketType);
         tvType = cardView.findViewById(R.id.number);
-        flash = v.findViewById(R.id.toggle_flash);
-        errorNum = v.findViewById(R.id.errorNum);
-        issue = v.findViewById(R.id.issueTv);
-        tv_lastCheck = v.findViewById(R.id.last_check);
-        errorDetail = v.findViewById(R.id.tvErrorDetail);
+        flash = view.findViewById(R.id.toggle_flash);
+        errorNum = view.findViewById(R.id.errorNum);
+        issue = view.findViewById(R.id.issueTv);
+        tv_lastCheck = view.findViewById(R.id.last_check);
+        errorDetail = view.findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
         makelist();
         Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.CAMERA,
@@ -130,7 +131,7 @@ public class HomeFragment extends Fragment {
         OnFragmentInteraction listener = (OnFragmentInteraction)getActivity();
         listener.onFragmentHistory(result);
 
-        return v;
+        return view;
 
     }
 
@@ -320,9 +321,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public interface OnFragmentInteraction{
-        public void onFragmentHistory(HashMap<String, String> s);
-    }
+
 
 
 
