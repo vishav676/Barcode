@@ -16,7 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
 
-public class MainActivity2 extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, MainActivity.OnFragmentInteraction {
+public class MainActivity2 extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteraction {
     private HashMap<String, String> history;
     BottomNavigationView bottomNavigationView;
     @Override
@@ -25,7 +25,7 @@ public class MainActivity2 extends AppCompatActivity implements BottomNavigation
         setContentView(R.layout.activity_main2);
         bottomNavigationView = findViewById(R.id.bottomNavigationBar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        openFragment(new MainActivity());
+        openFragment(new HomeFragment());
     }
 
     @Override
