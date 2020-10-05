@@ -3,6 +3,7 @@ package com.vishav.barcode;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.Image;
@@ -10,15 +11,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
@@ -30,6 +34,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -57,7 +62,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Fragment {
 
     private static final String TAG = "My Tag";
     private static final String ErrorTAG = "Error";
@@ -74,32 +79,39 @@ public class MainActivity extends AppCompatActivity {
     ProcessCameraProvider cameraProvider;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
+    dbHelper db;
 
-    dbHelper db = new dbHelper(this);
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
     HashMap<String, String> result = new HashMap<>();
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        cameraPreview = (PreviewView) findViewById(R.id.CameraViewid);
-        cardView = findViewById(R.id.barcode_result);
-        error_cardView = findViewById(R.id.barcode_error);
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+         db = new dbHelper(getActivity());
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        View v = inflater.inflate(R.layout.activity_main, container, false);
+
+        cameraPreview = (PreviewView) v.findViewById(R.id.CameraViewid);
+        cardView = v.findViewById(R.id.barcode_result);
+        error_cardView = v.findViewById(R.id.barcode_error);
         tvName = cardView.findViewById(R.id.tvname);
         tvNo = cardView.findViewById(R.id.tvType);
-        ticketNum = findViewById(R.id.ticketNumber);
-        ticketType = findViewById(R.id.ticketType);
+        ticketNum = v.findViewById(R.id.ticketNumber);
+        ticketType = v.findViewById(R.id.ticketType);
         tvType = cardView.findViewById(R.id.number);
-        flash = findViewById(R.id.toggle_flash);
-        errorNum = findViewById(R.id.errorNum);
-        issue = findViewById(R.id.issueTv);
-        tv_lastCheck = findViewById(R.id.last_check);
-        errorDetail = findViewById(R.id.tvErrorDetail);
+        flash = v.findViewById(R.id.toggle_flash);
+        errorNum = v.findViewById(R.id.errorNum);
+        issue = v.findViewById(R.id.issueTv);
+        tv_lastCheck = v.findViewById(R.id.last_check);
+        errorDetail = v.findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
         makelist();
-        Dexter.withActivity(this).withPermissions(Manifest.permission.CAMERA,
+        Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
                     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -107,13 +119,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
 
                         setupCamera();
-                        boolean hasFlash = getApplicationContext().getPackageManager().
+                        boolean hasFlash = getContext().getPackageManager().
                                 hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
                         flash.setOnCheckedChangeListener((compoundButton, b) -> {
                             if(hasFlash)
                                 camera.getCameraControl().enableTorch(b);
                             else
-                                Toast.makeText(getApplicationContext(),"Flash Not Available",
+                                Toast.makeText(getContext(),"Flash Not Available",
                                         Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -122,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }).check();
+        OnFragmentInteraction listener = (OnFragmentInteraction)getActivity();
+        listener.onFragmentHistory(result);
+
+        return v;
 
     }
 
@@ -135,27 +151,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.settings, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menu_history){
-            Intent intent = new Intent(this, history.class);
-            intent.putExtra("history_list", result);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     private void setupCamera()
     {
-        cameraProviderFuture = ProcessCameraProvider.getInstance(getApplicationContext());
+        cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
         cameraProviderFuture.addListener(()->{
             try {
                 cameraProvider = cameraProviderFuture.get();
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (ExecutionException | InterruptedException e){
                 Log.e(ErrorTAG, "setupCamera: ", e);
             }
-        }, ContextCompat.getMainExecutor(getApplicationContext()));
+        }, ContextCompat.getMainExecutor(getContext()));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -194,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configImageAnaylsis(){
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), image -> {
+        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getActivity()), image -> {
             @SuppressLint("UnsafeExperimentalUsageError") Image media = image.getImage();
             if(media!=null) {
                 Image.Plane[] plane = media.getPlanes();
@@ -312,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         time.schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> {
+                getActivity().runOnUiThread(() -> {
                     cardView.setVisibility(View.INVISIBLE);
                 });
             }
@@ -320,8 +323,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
+
+    public interface OnFragmentInteraction{
+        public void onFragmentHistory(HashMap<String, String> s);
+    }
+
+
 
 }

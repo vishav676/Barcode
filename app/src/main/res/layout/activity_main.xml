@@ -77,7 +77,7 @@
         android:background="@drawable/rect_box"
         android:layout_margin = "4dp"
         android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/radioGroup">
+        app:layout_constraintBottom_toBottomOf="parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -141,30 +141,4 @@
         </LinearLayout>
     </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/checking" />
-
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/checked" />
-
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/mannual" />
-    </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>
