@@ -303,7 +303,6 @@ public class HomeFragment extends Fragment {
         },5000);
     }
 
-
     private void delay(CardView cardView){
         Timer time = new Timer();
         time.schedule(new TimerTask() {
@@ -320,9 +319,4 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
-
-
-
-
-
 }
