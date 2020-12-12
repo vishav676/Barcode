@@ -1,5 +1,6 @@
 package com.vishav.barcode;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -23,13 +24,26 @@ public class StartNewChecking extends AppCompatActivity {
         setContentView(R.layout.activity_start_new_checking);
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
-        TabItem tickets = findViewById(R.id.tabTickets);
-        TabItem cards = findViewById(R.id.tabCards);
         addButton = findViewById(R.id.addTickets);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
-        PageAdapter pageAdapter = new PageAdapter(new FragmentActivity(), tabLayout.getTabCount());
+        PageAdapter pageAdapter = new PageAdapter(this);
         viewPager.setAdapter(pageAdapter);
-        new TabLayoutMediator(tabLayout, viewPager,(tab, position) -> tab.setText("Object"+ position + 1)).attach();
+        TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                switch (position){
+                    case 0:
+                        tab.setText("Tickets");
+                        tab.setIcon(R.drawable.ticket);
+                        break;
+                    case 1:
+                        tab.setText("Cards");
+                        tab.setIcon(R.drawable.cards);
+                        break;
+                }
+            }
+        });
+        mediator.attach();
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

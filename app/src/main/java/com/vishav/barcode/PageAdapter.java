@@ -8,11 +8,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class PageAdapter extends FragmentStateAdapter {
-    int numTabs;
 
-    public PageAdapter(@NonNull FragmentActivity fragmentActivity, int numTabs) {
+    public PageAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
-        this.numTabs = numTabs;
     }
 
     @NonNull
@@ -30,7 +28,7 @@ public class PageAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return numTabs;
+        return 2;
     }
     /*public PageAdapter(@NonNull FragmentManager fm, int numTabs) {
         super(fm);
