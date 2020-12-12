@@ -44,8 +44,28 @@
         android:padding="8dp"
         android:id="@+id/addTickets"
         android:background="@drawable/rect_box"/>
-    <TableLayout
+
+    <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
+        android:id="@+id/tabLayout"
         app:layout_constraintTop_toBottomOf="@id/addTickets"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tabTickets"
+            android:text="Tickets" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tabCards"
+            android:text="Cards" />
+    </com.google.android.material.tabs.TabLayout>
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        android:id="@+id/viewPager"
         android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
