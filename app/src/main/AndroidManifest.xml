@@ -18,6 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".bulkAdd"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,8 +28,7 @@
         </activity>
         <activity android:name=".AddTicket" />
         <activity android:name=".StartNewChecking" />
-        <activity android:name=".MainMenu">
-        </activity>
+        <activity android:name=".MainMenu"></activity>
         <activity android:name=".history" />
 
         <meta-data

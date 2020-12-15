@@ -23,7 +23,7 @@ public class MainMenu extends AppCompatActivity {
 
         String[] menuItems = new String[]{
                 "Easy Checking","Continue Checking", "Start New Checking","Checkings"
-                ,"Tickets Lists", "Cards Lists", "Settings"
+                ,"Tickets Lists", "Cards Lists", "Settings","Add Bulk Tickets"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -41,6 +41,9 @@ public class MainMenu extends AppCompatActivity {
 
                 }else if(position == 2){
                     Intent i = new Intent(MainMenu.this,StartNewChecking.class);
+                    startActivity(i);
+                }else if(position == 7){
+                    Intent i = new Intent(MainMenu.this,bulkAdd.class);
                     startActivity(i);
                 }
             }
