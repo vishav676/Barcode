@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
 
 import java.util.HashMap;

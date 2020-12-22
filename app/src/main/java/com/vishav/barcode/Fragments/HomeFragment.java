@@ -1,4 +1,4 @@
-package com.vishav.barcode;
+package com.vishav.barcode.Fragments;
 
 
 import android.Manifest;
@@ -44,6 +44,9 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
+import com.vishav.barcode.R;
+import com.vishav.barcode.Models.Ticket;
+import com.vishav.barcode.Database.dbHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

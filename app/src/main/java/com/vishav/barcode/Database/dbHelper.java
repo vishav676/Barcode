@@ -1,10 +1,12 @@
-package com.vishav.barcode;
+package com.vishav.barcode.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.vishav.barcode.Models.Ticket;
 
 
 public class dbHelper extends SQLiteOpenHelper{

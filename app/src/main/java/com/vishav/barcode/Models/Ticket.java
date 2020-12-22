@@ -1,4 +1,4 @@
-package com.vishav.barcode;
+package com.vishav.barcode.Models;
 
 public class Ticket {
     private String ticketNumber;

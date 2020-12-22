@@ -1,4 +1,4 @@
-package com.vishav.barcode;
+package com.vishav.barcode.Fragments;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.vishav.barcode.R;
 
 
 public class CardsFragment extends Fragment {

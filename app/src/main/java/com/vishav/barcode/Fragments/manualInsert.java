@@ -1,4 +1,4 @@
-package com.vishav.barcode;
+package com.vishav.barcode.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,9 +8,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.vishav.barcode.R;
+import com.vishav.barcode.Models.Ticket;
+import com.vishav.barcode.Database.dbHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,13 +39,17 @@ public class manualInsert extends Fragment {
         View root = inflater.inflate(R.layout.fragment_manual_insert, container, false);
         manual = root.findViewById(R.id.etMultiTickets);
         submit = root.findViewById(R.id.submitManualBulk);
+
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tickets = manual.getText().toString();
                 if(!tickets.equals("")){
                     saveTickets();
+                }else {
+                    manual.setError("Please Enter Tickets");
                 }
+                manual.setText("");
             }
         });
         return root;
@@ -74,7 +83,7 @@ public class manualInsert extends Fragment {
             int useable = Integer.parseInt(values[useablePosition]);
             Ticket ticket = new Ticket(number, customer,info,warningNote,useable,warning,event);
             db.insertTicket(ticket);
-            Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT).show();
         }
+        Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT).show();
     }
 }

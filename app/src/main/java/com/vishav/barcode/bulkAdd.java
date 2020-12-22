@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.vishav.barcode.Adapter.PageAdapter2;
 
 public class bulkAdd extends AppCompatActivity {
 

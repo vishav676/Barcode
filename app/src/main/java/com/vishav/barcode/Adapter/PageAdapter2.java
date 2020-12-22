@@ -1,9 +1,12 @@
-package com.vishav.barcode;
+package com.vishav.barcode.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.vishav.barcode.Fragments.CardsFragment;
+import com.vishav.barcode.Fragments.manualInsert;
 
 public class PageAdapter2 extends FragmentStateAdapter {
 

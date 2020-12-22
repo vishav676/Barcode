@@ -2,18 +2,16 @@ package com.vishav.barcode;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toolbar;
 
-import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.vishav.barcode.Adapter.PageAdapter;
 
 public class StartNewChecking extends AppCompatActivity {
 
@@ -47,7 +45,7 @@ public class StartNewChecking extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AddTicket.class);
+                Intent intent = new Intent(getApplicationContext(), bulkAdd.class);
                 startActivity(intent);
             }
         });

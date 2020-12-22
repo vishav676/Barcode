@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.vishav.barcode.Adapter.HashMapAdapter;
+
 import java.util.HashMap;
 
 public class history extends AppCompatActivity {
