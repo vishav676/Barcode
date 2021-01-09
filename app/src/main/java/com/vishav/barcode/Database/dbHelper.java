@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.vishav.barcode.Models.Ticket;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class dbHelper extends SQLiteOpenHelper{
 
@@ -124,6 +127,16 @@ public class dbHelper extends SQLiteOpenHelper{
         return result;
     }
 
+    public List<String> getEventName(){
+        List<String> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select " + checkingName + " from " + checkingTable;
+        Cursor cursor = db.rawQuery(query,null);
+        while (cursor.moveToNext()){
+            events.add(cursor.getString(0));
+        }
+        return events;
+    }
 
 }
 
