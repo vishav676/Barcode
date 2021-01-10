@@ -15,11 +15,14 @@ import android.view.ViewGroup;
 import com.vishav.barcode.Adapter.GridAdapter;
 import com.vishav.barcode.Database.dbHelper;
 import com.vishav.barcode.R;
+import com.vishav.barcode.databinding.FragmentManualInsertBinding;
+import com.vishav.barcode.databinding.FragmentTicketsBinding;
 
 import java.util.List;
 
 public class TicketsFragment extends Fragment {
 
+    private FragmentTicketsBinding root;
     Context mContext;
     public TicketsFragment() {
         // Required empty public constructor
@@ -36,8 +39,8 @@ public class TicketsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View root = inflater.inflate(R.layout.fragment_tickets, container, false);
-        RecyclerView ticketRecylerView = root.findViewById(R.id.rvTickets);
+        root = FragmentTicketsBinding.inflate(inflater, container, false);
+        RecyclerView ticketRecylerView = root.rvTickets;
         db = new dbHelper(mContext);
         List<String> eventNames = db.getEventName();
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
@@ -46,6 +49,6 @@ public class TicketsFragment extends Fragment {
         GridAdapter gridAdapter = new GridAdapter(eventNames);
         ticketRecylerView.setAdapter(gridAdapter);
 
-        return root;
+        return root.getRoot();
     }
 }

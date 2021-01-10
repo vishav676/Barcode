@@ -11,15 +11,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.vishav.barcode.databinding.ActivityMainMenuBinding;
+
 public class MainMenu extends AppCompatActivity {
 
     ListView menu;
+    private ActivityMainMenuBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
+        binding = ActivityMainMenuBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        menu = findViewById(R.id.lvMainMenu);
+        menu = binding.lvMainMenu;
 
         String[] menuItems = new String[]{
                 "Easy Checking","Continue Checking", "Start New Checking","Checkings"
@@ -31,21 +35,18 @@ public class MainMenu extends AppCompatActivity {
 
         menu.setAdapter(adapter);
 
-        menu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                if(position == 3)
-                {
-                    Intent i = new Intent(MainMenu.this,MainActivity2.class);
-                    startActivity(i);
+        menu.setOnItemClickListener((adapterView, view, position, id) -> {
+            if(position == 3)
+            {
+                Intent i = new Intent(MainMenu.this,MainActivity2.class);
+                startActivity(i);
 
-                }else if(position == 2){
-                    Intent i = new Intent(MainMenu.this,StartNewChecking.class);
-                    startActivity(i);
-                }else if(position == 7){
-                    Intent i = new Intent(MainMenu.this,bulkAdd.class);
-                    startActivity(i);
-                }
+            }else if(position == 2){
+                Intent i = new Intent(MainMenu.this,StartNewChecking.class);
+                startActivity(i);
+            }else if(position == 7){
+                Intent i = new Intent(MainMenu.this,bulkAdd.class);
+                startActivity(i);
             }
         });
     }

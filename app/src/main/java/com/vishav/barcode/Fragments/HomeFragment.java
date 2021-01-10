@@ -47,6 +47,8 @@ import com.vishav.barcode.Interfaces.OnFragmentInteraction;
 import com.vishav.barcode.R;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.Database.dbHelper;
+import com.vishav.barcode.databinding.FragmentHomeBinding;
+import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -77,7 +79,7 @@ public class HomeFragment extends Fragment {
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     dbHelper db;
-
+    private FragmentHomeBinding root;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
     HashMap<String, String> result = new HashMap<>();
@@ -91,21 +93,21 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        cameraPreview = (PreviewView) view.findViewById(R.id.CameraViewid);
-        cardView = view.findViewById(R.id.barcode_result);
-        error_cardView = view.findViewById(R.id.barcode_error);
+        root = FragmentHomeBinding.inflate(inflater, container, false);
+        cameraPreview = root.CameraViewid;
+        cardView = root.getRoot().findViewById(R.id.barcode_result);
+        error_cardView = root.getRoot().findViewById(R.id.barcode_error);
         tvName = cardView.findViewById(R.id.tvname);
         tvNo = cardView.findViewById(R.id.tvType);
-        ticketNum = view.findViewById(R.id.ticketNumber);
-        ticketType = view.findViewById(R.id.ticketType);
+        ticketNum = root.ticketNumber;
+        ticketType = root.ticketType;
         tvType = cardView.findViewById(R.id.number);
-        flash = view.findViewById(R.id.toggle_flash);
-        errorNum = view.findViewById(R.id.errorNum);
-        issue = view.findViewById(R.id.issueTv);
-        tv_lastCheck = view.findViewById(R.id.last_check);
-        errorDetail = view.findViewById(R.id.tvErrorDetail);
+        flash = root.toggleFlash;
+        errorNum = root.getRoot().findViewById(R.id.errorNum);
+        issue = root.getRoot().findViewById(R.id.issueTv);
+
+        tv_lastCheck = root.lastCheck;
+        errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
         makelist();
         Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.CAMERA,
@@ -134,7 +136,7 @@ public class HomeFragment extends Fragment {
         OnFragmentInteraction listener = (OnFragmentInteraction)getActivity();
         listener.onFragmentHistory(result);
 
-        return view;
+        return root.getRoot();
 
     }
 

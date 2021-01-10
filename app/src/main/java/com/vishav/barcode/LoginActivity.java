@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.vishav.barcode.databinding.ActivityLoginBinding;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,16 +20,19 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText username, password;
     Button login;
+    private ActivityLoginBinding binding;
     SharedPreferences sharedPreferences;
     public static final String loggedIn = "false";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        username = findViewById(R.id.username);
-        password = findViewById(R.id.password);
-        login = findViewById(R.id.login);
+        //View Binding
+        username = binding.username;
+        password = binding.password;
+        login = binding.login;
         sharedPreferences = getSharedPreferences(String.valueOf(loggedIn), Context.MODE_PRIVATE);
         String value = sharedPreferences.getString(loggedIn,"");
         if(value.equals("true")){

@@ -15,34 +15,34 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
+import com.vishav.barcode.databinding.ActivityMain2Binding;
 
 import java.util.HashMap;
 
 public class MainActivity2 extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteraction {
     private HashMap<String, String> history;
     BottomNavigationView bottomNavigationView;
+    private ActivityMain2Binding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-        bottomNavigationView = findViewById(R.id.bottomNavigationBar);
+        binding = ActivityMain2Binding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        bottomNavigationView = binding.bottomNavigationBar;
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         openFragment(new HomeFragment());
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.navigation_home:
-                Toast.makeText(this,"HOME",Toast.LENGTH_SHORT).show();
-                openFragment(new HomeFragment());
-                break;
-            case R.id.navigation_dashboard:
-                Toast.makeText(this,"Dashboard",Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.navigation_notifications:
-                Toast.makeText(this,"Notifications",Toast.LENGTH_SHORT).show();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.navigation_home) {
+            Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
+            openFragment(new HomeFragment());
+        } else if (itemId == R.id.navigation_dashboard) {
+            Toast.makeText(this, "Dashboard", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.navigation_notifications) {
+            Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
         }
         return true;
     }

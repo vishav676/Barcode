@@ -8,23 +8,24 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.vishav.barcode.Adapter.HashMapAdapter;
+import com.vishav.barcode.databinding.ActivityHistoryBinding;
 
 import java.util.HashMap;
 
 public class history extends AppCompatActivity {
 
-    ListView historyListView;
+    private ActivityHistoryBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        binding = ActivityHistoryBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         Intent intent = getIntent();
         HashMap<String,String> result = (HashMap<String, String>) intent.getSerializableExtra("history_list");
-        historyListView = (ListView)findViewById(R.id.lvHistory);
 
         if (result != null) {
             HashMapAdapter adapter = new HashMapAdapter(result);
-            historyListView.setAdapter(adapter);
+            binding.lvHistory.setAdapter(adapter);
         }
         else
         {
