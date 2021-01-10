@@ -40,14 +40,14 @@ public class TicketsFragment extends Fragment {
         // Inflate the layout for this fragment
 
         root = FragmentTicketsBinding.inflate(inflater, container, false);
-        RecyclerView ticketRecylerView = root.rvTickets;
+        RecyclerView ticketRecyclerView = root.rvTickets;
         db = new dbHelper(mContext);
         List<String> eventNames = db.getEventName();
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
-        ticketRecylerView.setLayoutManager(gridLayoutManager);
+        ticketRecyclerView.setLayoutManager(gridLayoutManager);
 
         GridAdapter gridAdapter = new GridAdapter(eventNames);
-        ticketRecylerView.setAdapter(gridAdapter);
+        ticketRecyclerView.setAdapter(gridAdapter);
 
         return root.getRoot();
     }

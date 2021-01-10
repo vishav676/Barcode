@@ -18,7 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".bulkAdd">
+        <activity android:name=".bulkAdd"
+            android:windowSoftInputMode="adjustPan">
+
         </activity>
         <activity android:name=".LoginActivity">
             <intent-filter>

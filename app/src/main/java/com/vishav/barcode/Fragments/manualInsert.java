@@ -43,10 +43,10 @@ public class manualInsert extends Fragment {
             if(!tickets.equals("")){
                 try {
                     if(tickets.contains(",")){
-                        saveTickets();
+                        save(";",",");
                     }else
                     {
-                        saveTicketsTabs();
+                        save("\n","\t");
                     }
                     Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT).show();
                 }
@@ -67,10 +67,11 @@ public class manualInsert extends Fragment {
         super.onAttach(context);
         mContext=context;
     }
-    public void saveTickets(){
+
+    public void save(String regexHeader, String regexData){
         db = new dbHelper(mContext);
-        String[] split = tickets.split(";");
-        String[] header = split[0].trim().split("\\s*,\\s*");
+        String[] split = tickets.split(regexHeader);
+        String[] header = split[0].trim().split(regexData);
         List<String> headers= Arrays.asList(header);
         int ticketNumPosition = headers.indexOf("Ticket Number");
         int infoPosition = headers.indexOf("info");
@@ -81,7 +82,7 @@ public class manualInsert extends Fragment {
         int useablePosition = headers.indexOf("Useable");
 
         for (int i=1;i<split.length;i++){
-            String[] values = split[i].split(",");
+            String[] values = split[i].split(regexData);
             String number = values[ticketNumPosition].replace("\n", "").replace("\r", "");
             String info = values[infoPosition];
             String warningNote = values[notePosition];
@@ -92,33 +93,5 @@ public class manualInsert extends Fragment {
             Ticket ticket = new Ticket(number, customer,info,warningNote,useable,warning,event);
             db.insertTicket(ticket);
         }
-
-    }
-    public void saveTicketsTabs(){
-        db = new dbHelper(mContext);
-        String[] split = tickets.split("\n");
-        String[] header = split[0].trim().split("\\s*\t\\s*");
-        List<String> headers= Arrays.asList(header);
-        int ticketNumPosition = headers.indexOf("Ticket Number");
-        int infoPosition = headers.indexOf("info");
-        int notePosition = headers.indexOf("Warning Note");
-        int warningPosition = headers.indexOf("Warning");
-        int customerPosition = headers.indexOf("Name");
-        int eventPosition = headers.indexOf("Event");
-        int useablePosition = headers.indexOf("Useable");
-
-        for (int i=1;i<split.length;i++){
-            String[] values = split[i].split("\t");
-            String number = values[ticketNumPosition].replace("\n", "").replace("\r", "");
-            String info = values[infoPosition];
-            String warningNote = values[notePosition];
-            String warning = values[warningPosition];
-            String customer = values[customerPosition];
-            int event = Integer.parseInt(values[eventPosition]);
-            int useable = Integer.parseInt(values[useablePosition].replace("\r", ""));
-            Ticket ticket = new Ticket(number, customer,info,warningNote,useable,warning,event);
-            db.insertTicket(ticket);
-        }
-
     }
 }
