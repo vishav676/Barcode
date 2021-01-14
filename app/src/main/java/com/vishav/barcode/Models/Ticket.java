@@ -1,6 +1,10 @@
 package com.vishav.barcode.Models;
 
-public class Ticket {
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Ticket implements Serializable {
     private String ticketNumber;
     private String CustomerName;
     private String Info;
@@ -45,7 +49,4 @@ public class Ticket {
     public String getWarning() {
         return warning;
     }
-
-
-
 }

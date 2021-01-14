@@ -15,9 +15,12 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
+import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.databinding.ActivityMain2Binding;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteraction {
     private HashMap<String, String> history;
@@ -30,7 +33,15 @@ public class MainActivity2 extends AppCompatActivity implements BottomNavigation
         setContentView(binding.getRoot());
         bottomNavigationView = binding.bottomNavigationBar;
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        openFragment(new HomeFragment());
+        Intent intent = getIntent();
+        List<Ticket> ticketList = (List<Ticket>) intent.getSerializableExtra("ticketList");
+        HomeFragment homeFragment = new HomeFragment();
+        if(ticketList != null){
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("ticketList", (Serializable) ticketList);
+            homeFragment.setArguments(bundle);
+        }
+        openFragment(homeFragment);
     }
 
     @Override

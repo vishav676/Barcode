@@ -6,10 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class dbHelper extends SQLiteOpenHelper{
@@ -42,7 +44,7 @@ public class dbHelper extends SQLiteOpenHelper{
     static final String ticketUseable = "Useable";
 
     public dbHelper( Context context) {
-        super(context, dbName, null, 1);
+        super(context, dbName, null, 2);
     }
 
     @Override
@@ -78,7 +80,6 @@ public class dbHelper extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Boat Party', '6:00 PM', '2 Oct 2020')");
         sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Welcome Party', '6:00 PM', '8 Sept 2020')");
         sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Morison Party', '6:00 PM', '30 Sept 2020')");
-
     }
 
     @Override
@@ -100,6 +101,7 @@ public class dbHelper extends SQLiteOpenHelper{
         contentValues.put(ticketWarning, ticket.getWarning());
         contentValues.put(ticketEvent, ticket.getTicketEvent());
         db.insert(ticketTable,null, contentValues);
+        db.close();
     }
     public Boolean searchTicket(String checkTicketNumber){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -111,6 +113,7 @@ public class dbHelper extends SQLiteOpenHelper{
             return false;
         }
         cursor.close();
+        db.close();
         return true;
     }
     public String getEventInfo(String ticketNo){
@@ -124,18 +127,47 @@ public class dbHelper extends SQLiteOpenHelper{
         assert cursor != null;
         String result = cursor.getString(cursor.getColumnIndex(checkingName));
         cursor.close();
+        db.close();
         return result;
     }
 
-    public List<String> getEventName(){
-        List<String> events = new ArrayList<>();
+    public List<Event> getEventName(){
+        List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "Select " + checkingName + " from " + checkingTable;
+        String query = "Select * from " + checkingTable;
         Cursor cursor = db.rawQuery(query,null);
+        int count = cursor.getCount();
         while (cursor.moveToNext()){
-            events.add(cursor.getString(0));
+            events.add(new Event(Integer.parseInt(cursor.getString(cursor.getColumnIndex(checkingID))),
+                    cursor.getString(cursor.getColumnIndex(checkingName)),
+                    cursor.getString(cursor.getColumnIndex(checkingTime)),
+                    cursor.getString(cursor.getColumnIndex(checkingDate))));
         }
+        cursor.close();
+        db.close();
         return events;
+    }
+
+    public List<Ticket> getEventTickets(int id){
+        List<Ticket> tickets = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select * from " + ticketTable + " inner join "  + checkingTable +" on " + checkingID +" = " + ticketEvent +" where " + checkingID + " = " + id;
+
+        Cursor cursor = db.rawQuery(query,null);
+
+        int count = cursor.getCount();
+        while (cursor.moveToNext()){
+            tickets.add(new Ticket(cursor.getString(cursor.getColumnIndex(ticketNumber)),
+                    cursor.getString(cursor.getColumnIndex(ticketCustomerName)),
+                    cursor.getString(cursor.getColumnIndex(ticketInfo)),
+                    cursor.getString(cursor.getColumnIndex(ticketWarningNote)),
+                    Integer.parseInt(cursor.getString(cursor.getColumnIndex(ticketUseable))),
+                    cursor.getString(cursor.getColumnIndex(ticketWarning)),
+                    Integer.parseInt(cursor.getString(cursor.getColumnIndex(ticketEvent)))));
+        }
+        cursor.close();
+        db.close();
+        return tickets;
     }
 
 }

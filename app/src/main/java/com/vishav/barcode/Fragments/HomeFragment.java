@@ -51,6 +51,7 @@ import com.vishav.barcode.databinding.FragmentHomeBinding;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,6 +80,7 @@ public class HomeFragment extends Fragment {
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     dbHelper db;
+    List<Ticket> ticketList = new ArrayList<>();
     private FragmentHomeBinding root;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
@@ -106,10 +108,13 @@ public class HomeFragment extends Fragment {
         errorNum = root.getRoot().findViewById(R.id.errorNum);
         issue = root.getRoot().findViewById(R.id.issueTv);
 
+        Bundle bundle = getArguments();
+        if(bundle != null){
+            ticketList = (List<Ticket>) bundle.getSerializable("ticketList");
+        }
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
-        makelist();
         Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
@@ -139,19 +144,6 @@ public class HomeFragment extends Fragment {
         return root.getRoot();
 
     }
-
-    public void makelist(){
-        for(int i =0; i<10; i++)
-        {
-            Random rand = new Random();
-            Ticket ticket = new Ticket("ELB"+i,"Customer "+i,"2 more",
-                    "Employee",2,"none",rand.nextInt(3)+1);
-            db.insertTicket(ticket);
-        }
-    }
-
-
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -263,17 +255,16 @@ public class HomeFragment extends Fragment {
                 int value_type = barcode.getValueType();
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
                     imageAnalysis.clearAnalyzer();
-                    if(db.searchTicket(barcode.getRawValue())
+                    if(ticketList.size() > 0){
+                        Ticket ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
+                        if(ticket != null){
+                            validTicket(barcode);
+                        }
+                    }
+                    else if(db.searchTicket(barcode.getRawValue())
                             && !result.containsKey(barcode.getRawValue())){
-                        String time = trackHistory();
-                        result.put(barcode.getRawValue(), time);
-                        cardView.setVisibility(View.VISIBLE);
-                        delay(cardView);
-                        ticketNum.setText(barcode.getRawValue());
-                        tvName.setText(barcode.getRawValue());
-                        tv_lastCheck.setText(time);
-                        ticketType.setText(db.getEventInfo(barcode.getRawValue()));
-                        delay();
+                        validTicket(barcode);
+                        
                     }
                     else
                     {
@@ -289,15 +280,28 @@ public class HomeFragment extends Fragment {
                             errorNum.setText(barcode.getRawValue());
                         }
                         delay(error_cardView);
-                        delay();
 
                     }
+                    delay();
 
                 }
             }
             isDetected = false;
         }
     }
+
+    private void validTicket(FirebaseVisionBarcode barcode){
+        String time = trackHistory();
+        result.put(barcode.getRawValue(), time);
+
+        cardView.setVisibility(View.VISIBLE);
+        delay(cardView);
+        ticketNum.setText(barcode.getRawValue());
+        tvName.setText(barcode.getRawValue());
+        tv_lastCheck.setText(time);
+        ticketType.setText(db.getEventInfo(barcode.getRawValue()));
+    }
+
     private void delay(){
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -305,7 +309,7 @@ public class HomeFragment extends Fragment {
             public void run() {
                     configImageAnaylsis();
             }
-        },5000);
+        },3000);
     }
 
     private void delay(CardView cardView){
@@ -313,9 +317,11 @@ public class HomeFragment extends Fragment {
         time.schedule(new TimerTask() {
             @Override
             public void run() {
-                getActivity().runOnUiThread(() -> {
-                    cardView.setVisibility(View.INVISIBLE);
-                });
+                if(getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        cardView.setVisibility(View.INVISIBLE);
+                    });
+                }
             }
         },3000);
     }
