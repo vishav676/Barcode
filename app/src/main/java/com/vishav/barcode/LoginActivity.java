@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(String.valueOf(loggedIn), Context.MODE_PRIVATE);
         String value = sharedPreferences.getString(loggedIn,"");
         if(value.equals("true")){
-            Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
         login.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
                 String pass = password.getText().toString();
                     if(user.equals("admin") && pass.equals("admin")) {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         editor.putString(loggedIn, "true");
                         editor.apply();
                         startActivity(intent);
