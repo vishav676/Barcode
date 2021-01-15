@@ -43,12 +43,11 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
-import com.vishav.barcode.R;
 import com.vishav.barcode.Models.Ticket;
-import com.vishav.barcode.Database.dbHelper;
+import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
-import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,7 +56,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -79,7 +77,7 @@ public class HomeFragment extends Fragment {
     ProcessCameraProvider cameraProvider;
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
-    dbHelper db;
+    DatabaseHelper db;
     List<Ticket> ticketList = new ArrayList<>();
     private FragmentHomeBinding root;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -89,7 +87,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-         db = new dbHelper(getActivity());
+         db = new DatabaseHelper(getActivity());
     }
 
     @Override

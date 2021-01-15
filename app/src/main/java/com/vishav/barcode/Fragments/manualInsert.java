@@ -2,20 +2,15 @@ package com.vishav.barcode.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.vishav.barcode.R;
+import androidx.fragment.app.Fragment;
+
+import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Models.Ticket;
-import com.vishav.barcode.Database.dbHelper;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
 import java.util.Arrays;
@@ -29,7 +24,7 @@ public class manualInsert extends Fragment {
         // Required empty public constructor
     }
     String tickets;
-    dbHelper db;
+    DatabaseHelper db;
     Context mContext;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,7 +64,7 @@ public class manualInsert extends Fragment {
     }
 
     public void save(String regexHeader, String regexData){
-        db = new dbHelper(mContext);
+        db = new DatabaseHelper(mContext);
         String[] split = tickets.split(regexHeader);
         String[] header = split[0].trim().split(regexData);
         List<String> headers= Arrays.asList(header);
