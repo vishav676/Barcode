@@ -188,24 +188,26 @@ public class HomeFragment extends Fragment {
     }
 
     private void configImageAnalysis(){
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getActivity()), image -> {
-            @SuppressLint("UnsafeExperimentalUsageError") Image media = image.getImage();
-            if(media!=null) {
-                Image.Plane[] plane = media.getPlanes();
-                if (plane.length >= 3) {
-                    for (Image.Plane plane1 : plane) {
-                        plane1.getBuffer().rewind();
+        if(getActivity() != null) {
+            imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getActivity()), image -> {
+                @SuppressLint("UnsafeExperimentalUsageError") Image media = image.getImage();
+                if (media != null) {
+                    Image.Plane[] plane = media.getPlanes();
+                    if (plane.length >= 3) {
+                        for (Image.Plane plane1 : plane) {
+                            plane1.getBuffer().rewind();
+                        }
+                        int rotation = degreeToFirebaseRotation(image.getImageInfo()
+                                .getRotationDegrees());
+                        FirebaseVisionImage fromMediaImage = FirebaseVisionImage
+                                .fromMediaImage(media, rotation);
+                        processImage(fromMediaImage);
                     }
-                    int rotation = degreeToFirebaseRotation(image.getImageInfo()
-                            .getRotationDegrees());
-                    FirebaseVisionImage fromMediaImage = FirebaseVisionImage
-                            .fromMediaImage(media, rotation);
-                    processImage(fromMediaImage);
                 }
-            }
 
-            image.close();
-        });
+                image.close();
+            });
+        }
     }
 
     private void processImage(FirebaseVisionImage visionImageFromFrame) {
