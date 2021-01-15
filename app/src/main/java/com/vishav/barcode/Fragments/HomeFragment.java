@@ -78,8 +78,8 @@ public class HomeFragment extends Fragment {
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     DatabaseHelper db;
-    List<Ticket> ticketList = new ArrayList<>();
     private FragmentHomeBinding root;
+    List<Ticket> ticketList = new ArrayList<>();
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
     HashMap<String, String> result = new HashMap<>();
@@ -107,12 +107,13 @@ public class HomeFragment extends Fragment {
         issue = root.getRoot().findViewById(R.id.issueTv);
 
         Bundle bundle = getArguments();
-        if(bundle != null){
+        if(bundle != null) {
             ticketList = (List<Ticket>) bundle.getSerializable("ticketList");
         }
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
+        root.checkedInCount.setText(result.size() + "/" + ticketList.size());
         Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
@@ -137,6 +138,7 @@ public class HomeFragment extends Fragment {
                     }
                 }).check();
         OnFragmentInteraction listener = (OnFragmentInteraction)getActivity();
+        assert listener != null;
         listener.onFragmentHistory(result);
 
         return root.getRoot();
@@ -177,7 +179,7 @@ public class HomeFragment extends Fragment {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
-        configImageAnaylsis();
+        configImageAnalysis();
 
         preview.setSurfaceProvider(cameraPreview.createSurfaceProvider());
 
@@ -185,7 +187,7 @@ public class HomeFragment extends Fragment {
                 ,cameraSelector,preview,imageAnalysis);
     }
 
-    private void configImageAnaylsis(){
+    private void configImageAnalysis(){
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getActivity()), image -> {
             @SuppressLint("UnsafeExperimentalUsageError") Image media = image.getImage();
             if(media!=null) {
@@ -254,30 +256,21 @@ public class HomeFragment extends Fragment {
                 if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
                     imageAnalysis.clearAnalyzer();
                     if(ticketList.size() > 0){
-                        Ticket ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
-                        if(ticket != null){
-                            validTicket(barcode);
-                        }
+                        validateTicket(barcode);
                     }
                     else if(db.searchTicket(barcode.getRawValue())
                             && !result.containsKey(barcode.getRawValue())){
                         validTicket(barcode);
-                        
                     }
                     else
                     {
-                        error_cardView.setVisibility(View.VISIBLE);
                         if (!db.searchTicket(barcode.getRawValue()))
                         {
-                            issue.setText("Ticket Number not in the list");
-                            errorNum.setText(barcode.getRawValue());
+                            inValidMessageTicketNotFound(barcode);
                         }
                         else if(result.containsKey(barcode.getRawValue())){
-                            issue.setText("Already used");
-                            errorDetail.setText(result.get(barcode.getRawValue()));
-                            errorNum.setText(barcode.getRawValue());
+                            inValidMessageAlreadyUsed(barcode);
                         }
-                        delay(error_cardView);
 
                     }
                     delay();
@@ -288,26 +281,50 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void validateTicket(FirebaseVisionBarcode barcode){
+        Ticket ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
+        if(ticket != null && !result.containsKey(barcode.getRawValue())){
+            validTicket(barcode);
+        }
+        else if(ticket == null){
+            inValidMessageTicketNotFound(barcode);
+        }
+        else if(result.containsKey(barcode.getRawValue())){
+            inValidMessageAlreadyUsed(barcode);
+        }
+    }
+
+    public void inValidMessageTicketNotFound(FirebaseVisionBarcode barcode){
+        error_cardView.setVisibility(View.VISIBLE);
+        issue.setText("Ticket Number not in the list");
+        errorNum.setText(barcode.getRawValue());
+        delay(error_cardView);
+    }
+
+    public void inValidMessageAlreadyUsed(FirebaseVisionBarcode barcode){
+        error_cardView.setVisibility(View.VISIBLE);
+        issue.setText("Already used");
+        errorDetail.setText(result.get(barcode.getRawValue()));
+        errorNum.setText(barcode.getRawValue());
+        delay(error_cardView);
+    }
+
     private void validTicket(FirebaseVisionBarcode barcode){
         String time = trackHistory();
         result.put(barcode.getRawValue(), time);
-
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         ticketNum.setText(barcode.getRawValue());
         tvName.setText(barcode.getRawValue());
         tv_lastCheck.setText(time);
         ticketType.setText(db.getEventInfo(barcode.getRawValue()));
+        root.checkedInCount.setText(result.size() + "/"+ ticketList.size());
     }
 
     private void delay(){
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                    configImageAnaylsis();
-            }
-        },3000);
+        handler.postDelayed(this::configImageAnalysis,3000);
     }
 
     private void delay(CardView cardView){

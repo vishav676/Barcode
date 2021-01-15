@@ -23,8 +23,7 @@
         android:textColor="#000"
         app:layout_constraintStart_toEndOf="@id/checked_in"
         app:layout_constraintBottom_toBottomOf="@id/auto_checking"
-        android:textSize="18sp"
-        android:text="15/198"/>
+        android:textSize="18sp"/>
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
