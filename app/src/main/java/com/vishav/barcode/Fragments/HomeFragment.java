@@ -62,7 +62,7 @@ import java.util.concurrent.ExecutionException;
 
 public class HomeFragment extends Fragment {
 
-    private static final String TAG = "My Tag";
+
     private static final String ErrorTAG = "Error";
     boolean isDetected = false;
     TextView ticketNum,ticketType;
@@ -257,21 +257,6 @@ public class HomeFragment extends Fragment {
                     imageAnalysis.clearAnalyzer();
                     if(ticketList.size() > 0){
                         validateTicket(barcode);
-                    }
-                    else if(db.searchTicket(barcode.getRawValue())
-                            && !result.containsKey(barcode.getRawValue())){
-                        validTicket(barcode);
-                    }
-                    else
-                    {
-                        if (!db.searchTicket(barcode.getRawValue()))
-                        {
-                            inValidMessageTicketNotFound(barcode);
-                        }
-                        else if(result.containsKey(barcode.getRawValue())){
-                            inValidMessageAlreadyUsed(barcode);
-                        }
-
                     }
                     delay();
 

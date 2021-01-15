@@ -75,12 +75,31 @@ public class DatabaseHelper extends database{
     }
 
     public List<Ticket> getEventTickets(int id){
-        List<Ticket> tickets = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "Select * from " + ticketTable + " inner join "  + checkingTable +" on " + checkingID +" = " + ticketEvent +" where " + checkingID + " = " + id;
 
         Cursor cursor = db.rawQuery(query,null);
 
+        List<Ticket> tickets = cursorToList(cursor);
+        cursor.close();
+        db.close();
+        return tickets;
+    }
+
+    public List<Ticket> getAllTickets(){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "Select * from " + ticketTable;
+        Cursor cursor = db.rawQuery(query,null);
+        List<Ticket> tickets = cursorToList(cursor);
+        cursor.close();
+        db.close();
+        return tickets;
+
+    }
+
+    public List<Ticket> cursorToList(Cursor cursor){
+        List<Ticket> tickets = new ArrayList<>();
         while (cursor.moveToNext()){
             tickets.add(new Ticket(cursor.getString(cursor.getColumnIndex(ticketNumber)),
                     cursor.getString(cursor.getColumnIndex(ticketCustomerName)),
@@ -90,8 +109,6 @@ public class DatabaseHelper extends database{
                     cursor.getString(cursor.getColumnIndex(ticketWarning)),
                     Integer.parseInt(cursor.getString(cursor.getColumnIndex(ticketEvent)))));
         }
-        cursor.close();
-        db.close();
         return tickets;
     }
 }

@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
 import com.vishav.barcode.Models.Ticket;
@@ -36,11 +37,12 @@ public class MainActivity2 extends AppCompatActivity implements BottomNavigation
         Intent intent = getIntent();
         List<Ticket> ticketList = (List<Ticket>) intent.getSerializableExtra("ticketList");
         HomeFragment homeFragment = new HomeFragment();
-        if(ticketList != null){
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("ticketList", (Serializable) ticketList);
-            homeFragment.setArguments(bundle);
+        if(ticketList == null){
+            ticketList = new DatabaseHelper(this).getAllTickets();
         }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ticketList", (Serializable) ticketList);
+        homeFragment.setArguments(bundle);
         openFragment(homeFragment);
     }
 
