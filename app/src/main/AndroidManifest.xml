@@ -34,7 +34,7 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
 
-        <activity android:name=".MainActivity2" />
+        <activity android:name=".ScannerActivity" />
     </application>
 
 </manifest>

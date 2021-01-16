@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Adapter.GridAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
-import com.vishav.barcode.MainActivity2;
+import com.vishav.barcode.ScannerActivity;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.databinding.FragmentTicketsBinding;
@@ -64,7 +64,7 @@ public class TicketsFragment extends Fragment {
         ticketRecyclerView.setAdapter(gridAdapter);
         root.startChecking.setOnClickListener(view -> {
             List<Ticket> tickets = selectedEventTickets(eventIds);
-            Intent intent = new Intent(getActivity(), MainActivity2.class);
+            Intent intent = new Intent(getActivity(), ScannerActivity.class);
             intent.putExtra("ticketList", (Serializable) tickets);
             startActivity(intent);
         });

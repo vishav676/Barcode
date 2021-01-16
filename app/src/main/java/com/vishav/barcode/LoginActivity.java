@@ -39,19 +39,16 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String user = username.getText().toString();
-                String pass = password.getText().toString();
-                    if(user.equals("admin") && pass.equals("admin")) {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        editor.putString(loggedIn, "true");
-                        editor.apply();
-                        startActivity(intent);
-                    }
-            }
+        login.setOnClickListener(view -> {
+            String user = username.getText().toString();
+            String pass = password.getText().toString();
+                if(user.equals("admin") && pass.equals("admin")) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    editor.putString(loggedIn, "true");
+                    editor.apply();
+                    startActivity(intent);
+                }
         });
     }
 }
