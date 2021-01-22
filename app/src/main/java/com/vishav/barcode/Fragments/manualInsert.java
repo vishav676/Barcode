@@ -1,20 +1,24 @@
 package com.vishav.barcode.Fragments;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
-import java.util.Arrays;
-import java.util.List;
+
 
 
 public class manualInsert extends Fragment {
@@ -27,7 +31,7 @@ public class manualInsert extends Fragment {
     DatabaseHelper db;
     Context mContext;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
@@ -55,37 +59,49 @@ public class manualInsert extends Fragment {
             }
             root.etMultiTickets.setText("");
         });
+
+        root.pasteBin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pasteToEditText();
+            }
+        });
         return root.getRoot();
     }
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext=context;
     }
 
+    private void pasteToEditText(){
+        ClipboardManager clipboardManager = (ClipboardManager)mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        CharSequence pasteData = "";
+        if(clipboardManager.hasPrimaryClip()) {
+            if (clipboardManager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
+                pasteData = item.getText();
+                root.etMultiTickets.setText(pasteData);
+            }
+        }else
+        {
+            Toast.makeText(mContext, "Clipboard is Empty", Toast.LENGTH_SHORT).show();
+        }
+    }
     public void save(String regexHeader, String regexData){
         db = new DatabaseHelper(mContext);
         String[] split = tickets.split(regexHeader);
-        String[] header = split[0].trim().split(regexData);
-        List<String> headers= Arrays.asList(header);
-        int ticketNumPosition = headers.indexOf("Ticket Number");
-        int infoPosition = headers.indexOf("info");
-        int notePosition = headers.indexOf("Warning Note");
-        int warningPosition = headers.indexOf("Warning");
-        int customerPosition = headers.indexOf("Name");
-        int eventPosition = headers.indexOf("Event");
-        int useablePosition = headers.indexOf("Useable");
 
-        for (int i=1;i<split.length;i++){
-            String[] values = split[i].split(regexData);
-            String number = values[ticketNumPosition].replace("\n", "").replace("\r", "");
-            String info = values[infoPosition];
-            String warningNote = values[notePosition];
-            String warning = values[warningPosition];
-            String customer = values[customerPosition];
-            int event = Integer.parseInt(values[eventPosition].replaceAll("\\s+",""));
-            int useable = Integer.parseInt(values[useablePosition].replaceAll("\\s+","").replace("\n", "").replace("\r", ""));
-            Ticket ticket = new Ticket(number, customer,info,warningNote,useable,warning,event);
+        for (String s : split) {
+            String[] values = s.split(regexData);
+            String number = values[0].replace("\n", "").replace("\r", "");
+            String info = values[1];
+            String warningNote = values[2];
+            String warning = values[3];
+            String customer = values[4];
+            int event = Integer.parseInt(values[5].replaceAll("\\s+", ""));
+            int useable = Integer.parseInt(values[6].replaceAll("\\s+", "").replace("\n", "").replace("\r", ""));
+            Ticket ticket = new Ticket(number, customer, info, warningNote, useable, warning, event);
             db.insertTicket(ticket);
         }
     }

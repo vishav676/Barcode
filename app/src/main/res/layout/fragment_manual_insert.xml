@@ -28,6 +28,14 @@
         android:lines="10"
         android:id="@+id/etMultiTickets"
         android:layout_height="wrap_content"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:id="@+id/pasteBin"
+        android:src="@drawable/paste_bin"
+        app:layout_constraintLeft_toRightOf="@id/etMultiTickets"
+        app:layout_constraintTop_toTopOf="@id/etMultiTickets"
+        app:layout_constraintBottom_toBottomOf="@id/etMultiTickets"
+        android:layout_height="wrap_content"/>
     <Button
         android:layout_width="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
