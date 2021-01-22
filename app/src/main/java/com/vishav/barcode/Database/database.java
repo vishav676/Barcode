@@ -44,7 +44,7 @@ public class database extends SQLiteOpenHelper{
     static final String ticketUseable = "Useable";
 
     public database(Context context) {
-        super(context, dbName, null, 2);
+        super(context, dbName, null, 3);
     }
 
     @Override

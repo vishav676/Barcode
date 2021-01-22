@@ -18,7 +18,7 @@
         android:id="@+id/tvInfoAdd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="You can either copy and paste tickets directly from a file or Insert them manually. To correctly include properties, use the first line to name them (one by one separated by commas), then add one ticket per line together with its properties (separated by commas)." />
+        android:text="You can either copy and paste tickets directly from a file or Insert them manually. To correctly include properties add one ticket per line together with its properties (separated by commas)." />
 
     <EditText
         android:layout_width="match_parent"
