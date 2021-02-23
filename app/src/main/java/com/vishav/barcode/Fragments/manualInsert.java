@@ -60,12 +60,7 @@ public class manualInsert extends Fragment {
             root.etMultiTickets.setText("");
         });
 
-        root.pasteBin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pasteToEditText();
-            }
-        });
+        root.pasteBin.setOnClickListener(view -> pasteToEditText());
         return root.getRoot();
     }
     @Override

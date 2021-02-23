@@ -40,10 +40,10 @@
         app:layout_constraintTop_toBottomOf="@id/searchViewListName"
         android:layout_height="wrap_content">
     </com.google.android.material.tabs.TabLayout>
-        <androidx.viewpager2.widget.ViewPager2
-            android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/tabLayout2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/viewPager2"
-            android:layout_height="0dp"/>
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/viewPager2"
+        android:layout_height="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

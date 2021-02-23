@@ -17,17 +17,19 @@ public class DatabaseHelper extends database{
 
     }
     public void insertTicket(Ticket ticket ){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ticketNumber, ticket.getTicketNumber());
-        contentValues.put(ticketCustomerName, ticket.getCustomerName());
-        contentValues.put(ticketInfo, ticket.getInfo());
-        contentValues.put(ticketWarningNote, ticket.getWarningNote());
-        contentValues.put(ticketUseable, ticket.getUseable());
-        contentValues.put(ticketWarning, ticket.getWarning());
-        contentValues.put(ticketEvent, ticket.getTicketEvent());
-        db.insert(ticketTable,null, contentValues);
-        db.close();
+        if(!searchTicket(ticket.getTicketNumber())) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ticketNumber, ticket.getTicketNumber());
+            contentValues.put(ticketCustomerName, ticket.getCustomerName());
+            contentValues.put(ticketInfo, ticket.getInfo());
+            contentValues.put(ticketWarningNote, ticket.getWarningNote());
+            contentValues.put(ticketUseable, ticket.getUseable());
+            contentValues.put(ticketWarning, ticket.getWarning());
+            contentValues.put(ticketEvent, ticket.getTicketEvent());
+            db.insert(ticketTable, null, contentValues);
+            db.close();
+        }
     }
     public Boolean searchTicket(String checkTicketNumber){
         SQLiteDatabase db = this.getReadableDatabase();
