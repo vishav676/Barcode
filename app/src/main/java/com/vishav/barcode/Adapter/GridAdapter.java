@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Models.Event;
+import com.vishav.barcode.Models.TicketList;
 import com.vishav.barcode.R;
 
 import java.sql.Array;
@@ -20,14 +21,14 @@ import java.util.List;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder> {
 
-    List<Event> titles;
+    List<TicketList> titles;
 
     public interface OnItemCheckListener{
         void onItemCheck(int title);
         void onItemUnCheck(int title);
     }
     private OnItemCheckListener onItemCheckListener;
-    public GridAdapter(List<Event> cursor, OnItemCheckListener onItemCheckListener){
+    public GridAdapter(List<TicketList> cursor, OnItemCheckListener onItemCheckListener){
         this.titles = cursor;
         this.onItemCheckListener = onItemCheckListener;
     }
@@ -40,13 +41,13 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder>
 
     @Override
     public void onBindViewHolder(RowViewHolder holder, int position) {
-        holder.title.setText(titles.get(position).getName());
+        holder.title.setText(titles.get(position).getTicketListName());
         holder.checkBox.setOnClickListener(view -> {
             boolean isChecked = holder.checkBox.isChecked();
             if(isChecked){
-                onItemCheckListener.onItemCheck(titles.get(position).getId());
+                onItemCheckListener.onItemCheck(titles.get(position).getTicketListId());
             }else{
-                onItemCheckListener.onItemUnCheck(titles.get(position).getId());
+                onItemCheckListener.onItemUnCheck(titles.get(position).getTicketListId());
             }
         });
     }
