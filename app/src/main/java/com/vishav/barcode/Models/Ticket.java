@@ -10,20 +10,20 @@ public class Ticket implements Serializable {
     private String Info;
     private String warningNote;
     private int useable;
-    private int ticketEvent;
+    private int ticketListId;
     private String warning;
 
-    public Ticket(String ticketNumber,String CustomerName,String Info,String warningNote, int useable, String warning,int ticketEvent){
+    public Ticket(String ticketNumber,String CustomerName,String Info,String warningNote, int useable, String warning,int ticketListId){
         this.ticketNumber = ticketNumber;
         this.CustomerName = CustomerName;
         this.Info = Info;
         this.warningNote = warningNote;
         this.warning = warning;
         this.useable = useable;
-        this.ticketEvent = ticketEvent;
+        this.ticketListId = ticketListId;
     }
-    public int getTicketEvent() {
-        return ticketEvent;
+    public int getTicketListId() {
+        return ticketListId;
     }
 
     public String getTicketNumber() {
