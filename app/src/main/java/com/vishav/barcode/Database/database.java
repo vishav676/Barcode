@@ -41,7 +41,6 @@ public class database extends SQLiteOpenHelper{
     static final String ticketNumber = "ticketNumber";
     static final String ticketCustomerName = "CustomerName";
     static final String ticketInfo = "OrderInfo";
-    static final String ticketEvent = "TicketType";
     static final String ticketListId = "TicketListID";
     static final String ticketWarning = "Warning";
     static final String ticketWarningNote = "WarningNote";
@@ -71,7 +70,7 @@ public class database extends SQLiteOpenHelper{
     static final String ListUpdated = "Updated";
 
     public database(Context context) {
-        super(context, dbName, null, 4);
+        super(context, dbName, null, 7);
     }
 
     @Override
@@ -121,7 +120,6 @@ public class database extends SQLiteOpenHelper{
                 ticketUseable + " INTEGER," +
                 ticketListId + " INTEGER," +
                 ticketWarning + " TEXT," +
-                        " FOREIGN KEY ("+ ticketEvent +") REFERENCES "+ checkingTable + " ("+checkingID+"),"+
                         " FOREIGN KEY ("+ ticketListId +") REFERENCES "+ TicketListTable + " ("+TicketListPrimaryID+"));"
                 );
 
@@ -135,9 +133,9 @@ public class database extends SQLiteOpenHelper{
                 ELBCardWarning + " TEXT," +
                 " FOREIGN KEY ("+ ELBCardListId +") REFERENCES "+ ELBCardListTable + " ("+ELBPrimaryID+"));"
         );
-        sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Boat Party', '6:00 PM', '2 Oct 2020')");
-        sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Welcome Party', '6:00 PM', '8 Sept 2020')");
-        sqLiteDatabase.execSQL("INSERT INTO " + checkingTable+ "(checkingName, checkingTime, checkingDate ) VALUES ('Morison Party', '6:00 PM', '30 Sept 2020')");
+        sqLiteDatabase.execSQL("INSERT INTO " + TicketListTable+ "(Name, Created, Updated ) VALUES ('Boat Party Tickets', '2 Oct 2020', '2 Oct 2020')");
+        sqLiteDatabase.execSQL("INSERT INTO " + TicketListTable+ "(Name, Created, Updated ) VALUES ('Welcome Party Tickets', '6:00 PM', '8 Sept 2020')");
+        sqLiteDatabase.execSQL("INSERT INTO " + TicketListTable+ "(Name, Created, Updated ) VALUES ('Morison Party Tickets', '6:00 PM', '30 Sept 2020')");
     }
 
     @Override

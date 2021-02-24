@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
+import com.vishav.barcode.Models.TicketList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class DatabaseHelper extends database{
             contentValues.put(ticketWarningNote, ticket.getWarningNote());
             contentValues.put(ticketUseable, ticket.getUseable());
             contentValues.put(ticketWarning, ticket.getWarning());
-            contentValues.put(ticketEvent, ticket.getTicketEvent());
+            contentValues.put(ticketListId, ticket.getTicketListId());
             db.insert(ticketTable, null, contentValues);
             db.close();
         }
@@ -46,7 +47,7 @@ public class DatabaseHelper extends database{
     }
     public String getEventInfo(String ticketNo){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "Select "+ checkingName + " from " + checkingTable + " inner join "  + ticketTable +" on " + checkingID +" = " + ticketEvent +" where " + ticketNumber +" like '" + ticketNo +"%'";
+        String query = "Select "+ checkingName + " from " + checkingTable + " inner join "  + ticketTable +" on " + checkingID +" = " + ticketListId +" where " + ticketNumber +" like '" + ticketNo +"%'";
 
         Cursor cursor = db.rawQuery(query,null);
         if (cursor != null){
@@ -57,6 +58,26 @@ public class DatabaseHelper extends database{
         cursor.close();
         db.close();
         return result;
+    }
+
+    public List<TicketList> getAllTicketLists(){
+        List<TicketList> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select * from " + TicketListTable;
+        Cursor cursor = db.rawQuery(query,null);
+        int count = cursor.getCount();
+        while (cursor.moveToNext()){
+            events.add(new TicketList
+                    (
+                        cursor.getString(cursor.getColumnIndex(TicketListPrimaryID)),
+                        cursor.getString(cursor.getColumnIndex(TicketListName)),
+                        cursor.getString(cursor.getColumnIndex(TicketListCreated)),
+                        cursor.getString(cursor.getColumnIndex(TicketListUpdated))
+                    ));
+        }
+        cursor.close();
+        db.close();
+        return events;
     }
 
     public List<Event> getEventName(){
@@ -78,7 +99,7 @@ public class DatabaseHelper extends database{
 
     public List<Ticket> getEventTickets(int id){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "Select * from " + ticketTable + " inner join "  + checkingTable +" on " + checkingID +" = " + ticketEvent +" where " + checkingID + " = " + id;
+        String query = "Select * from " + ticketTable + " inner join "  + checkingTable +" on " + checkingID +" = " + ticketListId +" where " + checkingID + " = " + id;
 
         Cursor cursor = db.rawQuery(query,null);
 
@@ -109,7 +130,7 @@ public class DatabaseHelper extends database{
                     cursor.getString(cursor.getColumnIndex(ticketWarningNote)),
                     Integer.parseInt(cursor.getString(cursor.getColumnIndex(ticketUseable))),
                     cursor.getString(cursor.getColumnIndex(ticketWarning)),
-                    Integer.parseInt(cursor.getString(cursor.getColumnIndex(ticketEvent)))));
+                    Integer.parseInt(cursor.getString(cursor.getColumnIndex(ticketListId)))));
         }
         return tickets;
     }
