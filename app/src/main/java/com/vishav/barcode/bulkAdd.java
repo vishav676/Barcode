@@ -11,15 +11,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.vishav.barcode.Adapter.PageAdapter2;
 import com.vishav.barcode.databinding.ActivityBulkAddBinding;
+import com.vishav.barcode.databinding.ActivityMainMenuBinding;
 
 public class bulkAdd extends Fragment {
 
     private ActivityBulkAddBinding binding;
+    private EditText listName;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -30,6 +33,7 @@ public class bulkAdd extends Fragment {
         super.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
         binding = ActivityBulkAddBinding.inflate(getLayoutInflater());
+        listName = binding.newListName;
 
         PageAdapter2 pageAdapter = new PageAdapter2(getActivity());
         binding.viewPager2.setAdapter(pageAdapter);

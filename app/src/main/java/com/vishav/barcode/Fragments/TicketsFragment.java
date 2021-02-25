@@ -42,7 +42,7 @@ public class TicketsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         List<Integer> ticketListIds = new ArrayList<>();
 
         root = FragmentTicketsBinding.inflate(inflater, container, false);
@@ -77,7 +77,7 @@ public class TicketsFragment extends Fragment {
     public List<Ticket> selectedEventTickets(List<Integer> eventIds){
         List<Ticket> tickets = new ArrayList<>();
         for (Integer eventId : eventIds){
-            tickets.addAll(db.getEventTickets(eventId));
+            tickets.addAll(db.getTicketListById(eventId));
         }
         return tickets;
     }

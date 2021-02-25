@@ -42,6 +42,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder>
     @Override
     public void onBindViewHolder(RowViewHolder holder, int position) {
         holder.title.setText(titles.get(position).getTicketListName());
+        holder.lastUpdated.setText(titles.get(position).getUpdatedAt());
         holder.checkBox.setOnClickListener(view -> {
             boolean isChecked = holder.checkBox.isChecked();
             if(isChecked){
@@ -61,10 +62,12 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder>
         // init the item view's
         TextView title;
         CheckBox checkBox;
+        TextView lastUpdated;
         public RowViewHolder(View itemView) {
             super(itemView);
             // get the reference of item view's
             title = (TextView) itemView.findViewById(R.id.tvTitle);
+            lastUpdated = itemView.findViewById(R.id.lastUpdated);
             checkBox = itemView.findViewById(R.id.checkbox);
         }
 

@@ -5,10 +5,12 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,14 +18,18 @@ import androidx.fragment.app.Fragment;
 
 import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Models.Ticket;
+import com.vishav.barcode.Models.TicketList;
+import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
-
+import java.time.LocalDateTime;
+import java.util.Calendar;
 
 
 public class manualInsert extends Fragment {
 
     private FragmentManualInsertBinding root;
+    private EditText listName;
     public manualInsert() {
         // Required empty public constructor
     }
@@ -37,6 +43,7 @@ public class manualInsert extends Fragment {
 
         root = FragmentManualInsertBinding.inflate(inflater, container, false);
 
+        listName = getActivity().findViewById(R.id.newListName);
         root.submitManualBulk.setOnClickListener(view -> {
             tickets = root.etMultiTickets.getText().toString();
             if(!tickets.equals("")){
@@ -47,6 +54,7 @@ public class manualInsert extends Fragment {
                     {
                         save("\n","\t");
                     }
+                    listName.setText("");
                     Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e)
@@ -86,7 +94,21 @@ public class manualInsert extends Fragment {
     public void save(String regexHeader, String regexData){
         db = new DatabaseHelper(mContext);
         String[] split = tickets.split(regexHeader);
+        if (TextUtils.isEmpty(listName.getText())){
+            Toast.makeText(mContext, "Please Provide List Name", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            saveListToDb(split, regexData);
+        }
+    }
 
+    public void saveListToDb(String[] split, String regexData){
+        String newListName = listName.getText().toString();
+        TicketList newTicketList = new TicketList(newListName, Calendar.getInstance().getTime().toString(),Calendar.getInstance().getTime().toString());
+        int ticketListId = db.insertTicketList(newTicketList);
+        if(ticketListId<0){
+            throw new ArithmeticException();
+        }
         for (String s : split) {
             String[] values = s.split(regexData);
             String number = values[0].replace("\n", "").replace("\r", "");
@@ -94,9 +116,8 @@ public class manualInsert extends Fragment {
             String warningNote = values[2];
             String warning = values[3];
             String customer = values[4];
-            int event = Integer.parseInt(values[5].replaceAll("\\s+", ""));
-            int useable = Integer.parseInt(values[6].replaceAll("\\s+", "").replace("\n", "").replace("\r", ""));
-            Ticket ticket = new Ticket(number, customer, info, warningNote, useable, warning, event);
+            int useable = Integer.parseInt(values[5].replaceAll("\\s+", "").replace("\n", "").replace("\r", ""));
+            Ticket ticket = new Ticket(number, customer, info, warningNote, useable, warning, ticketListId);
             db.insertTicket(ticket);
         }
     }
