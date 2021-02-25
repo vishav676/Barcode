@@ -32,6 +32,21 @@ public class DatabaseHelper extends database{
             db.close();
         }
     }
+
+    public int insertTicketList(TicketList ticketList ){
+        long ticketListId = -1;
+        if(searchTicketList(ticketList.getTicketListName()) < 0) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TicketListName, ticketList.getTicketListName());
+            contentValues.put(TicketListCreated, ticketList.getCreatedAt());
+            contentValues.put(TicketListUpdated, ticketList.getUpdatedAt());
+            ticketListId = db.insert(TicketListTable, null, contentValues);
+            db.close();
+        }
+        return (int)ticketListId;
+    }
+
     public Boolean searchTicket(String checkTicketNumber){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "Select * from " + ticketTable+ " where " + ticketNumber +" like '" + checkTicketNumber +"%'";
@@ -44,6 +59,22 @@ public class DatabaseHelper extends database{
         cursor.close();
         db.close();
         return true;
+    }
+
+    public int searchTicketList(String ticketListName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select * from " + TicketListTable+ " where " + TicketListName +" like '" + ticketListName +"%'";
+        int ticketListId;
+
+        Cursor cursor = db.rawQuery(query,null);
+        if (cursor.getCount()<=0){
+            cursor.close();
+            return -1;
+        }
+        ticketListId = cursor.getInt(cursor.getColumnIndex(TicketListPrimaryID));
+        cursor.close();
+        db.close();
+        return ticketListId;
     }
     public String getEventInfo(String ticketNo){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -100,6 +131,18 @@ public class DatabaseHelper extends database{
     public List<Ticket> getEventTickets(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "Select * from " + ticketTable + " inner join "  + checkingTable +" on " + checkingID +" = " + ticketListId +" where " + checkingID + " = " + id;
+
+        Cursor cursor = db.rawQuery(query,null);
+
+        List<Ticket> tickets = cursorToList(cursor);
+        cursor.close();
+        db.close();
+        return tickets;
+    }
+
+    public List<Ticket> getTicketListById(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select * from " + ticketTable + " inner join "  + TicketListTable +" on " + TicketListPrimaryID +" = " + ticketListId +" where " + TicketListPrimaryID + " = " + id;
 
         Cursor cursor = db.rawQuery(query,null);
 

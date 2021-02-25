@@ -70,7 +70,7 @@ public class database extends SQLiteOpenHelper{
     static final String ListUpdated = "Updated";
 
     public database(Context context) {
-        super(context, dbName, null, 7);
+        super(context, dbName, null, 11);
     }
 
     @Override
@@ -133,9 +133,6 @@ public class database extends SQLiteOpenHelper{
                 ELBCardWarning + " TEXT," +
                 " FOREIGN KEY ("+ ELBCardListId +") REFERENCES "+ ELBCardListTable + " ("+ELBPrimaryID+"));"
         );
-        sqLiteDatabase.execSQL("INSERT INTO " + TicketListTable+ "(Name, Created, Updated ) VALUES ('Boat Party Tickets', '2 Oct 2020', '2 Oct 2020')");
-        sqLiteDatabase.execSQL("INSERT INTO " + TicketListTable+ "(Name, Created, Updated ) VALUES ('Welcome Party Tickets', '6:00 PM', '8 Sept 2020')");
-        sqLiteDatabase.execSQL("INSERT INTO " + TicketListTable+ "(Name, Created, Updated ) VALUES ('Morison Party Tickets', '6:00 PM', '30 Sept 2020')");
     }
 
     @Override
