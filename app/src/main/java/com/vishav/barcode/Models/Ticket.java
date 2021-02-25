@@ -22,6 +22,14 @@ public class Ticket implements Serializable {
         this.useable = useable;
         this.ticketListId = ticketListId;
     }
+    public Ticket(String ticketNumber,String CustomerName,String Info,String warningNote, int useable, String warning){
+        this.ticketNumber = ticketNumber;
+        this.CustomerName = CustomerName;
+        this.Info = Info;
+        this.warningNote = warningNote;
+        this.warning = warning;
+        this.useable = useable;
+    }
     public int getTicketListId() {
         return ticketListId;
     }

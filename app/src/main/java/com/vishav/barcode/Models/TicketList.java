@@ -13,6 +13,12 @@ public class TicketList {
         this.updatedAt = updatedAt;
     }
 
+    public TicketList(String ticketListName, String createdAt, String updatedAt) {
+        this.ticketListName = ticketListName;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public int getTicketListId() {
         return Integer.parseInt(ticketListId);
     }
