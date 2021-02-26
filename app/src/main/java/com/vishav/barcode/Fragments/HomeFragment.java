@@ -45,6 +45,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
+import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
@@ -79,6 +80,7 @@ public class HomeFragment extends Fragment {
     FirebaseVisionBarcodeDetector detector;
     DatabaseHelper db;
     private FragmentHomeBinding root;
+    Event event;
     List<Ticket> ticketList = new ArrayList<>();
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
@@ -109,6 +111,9 @@ public class HomeFragment extends Fragment {
         Bundle bundle = getArguments();
         if(bundle != null) {
             ticketList = (List<Ticket>) bundle.getSerializable("ticketList");
+            event = (Event) bundle.getSerializable("event");
+            if (event != null)
+                ticketList = db.getEventTickets(event.getID());
         }
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
@@ -305,7 +310,7 @@ public class HomeFragment extends Fragment {
         ticketNum.setText(barcode.getRawValue());
         tvName.setText(barcode.getRawValue());
         tv_lastCheck.setText(time);
-        ticketType.setText(db.getEventInfo(barcode.getRawValue()));
+        ticketType.setText(event.getName());
         root.checkedInCount.setText(result.size() + "/"+ ticketList.size());
     }
 

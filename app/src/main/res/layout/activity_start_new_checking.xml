@@ -27,16 +27,28 @@
         android:textSize="26sp"
         android:id="@+id/tvSelect"
         android:layout_height="wrap_content"/>
-    <SearchView
+    <EditText
         android:layout_width="match_parent"
+        android:hint="Checking Name"
         app:layout_constraintTop_toBottomOf="@id/tvSelect"
         app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/searchView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/checkingName"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_height="wrap_content"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/checkingName"
+        android:id="@+id/datePickerView"
+        android:src="@drawable/ic_baseline_calendar_today_24"
+        app:layout_constraintBottom_toBottomOf="@id/checkingName"
+        app:layout_constraintTop_toTopOf="@id/checkingName"
         android:layout_height="wrap_content"/>
     <Button
         android:layout_width="wrap_content"
         android:text="Add Tickets"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintTop_toBottomOf="@id/checkingName"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

@@ -1,11 +1,19 @@
 package com.vishav.barcode.Fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,7 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Adapter.GridAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Models.CheckingTicketList;
 import com.vishav.barcode.Models.TicketList;
+import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
@@ -22,12 +32,21 @@ import com.vishav.barcode.databinding.FragmentTicketsBinding;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class TicketsFragment extends Fragment {
 
     private FragmentTicketsBinding root;
     Context mContext;
+    EditText checkingListNameEt;
+    List<TicketList> ticketList;
+    ImageView datePickerView;
+    DatePickerDialog.OnDateSetListener onDateSetListener;
+    String date;
+    RecyclerView ticketRecyclerView;
+    List<Integer> ticketListIds = new ArrayList<>();
+    int eventId;
 
     public TicketsFragment() {
         // Required empty public constructor
@@ -38,17 +57,57 @@ public class TicketsFragment extends Fragment {
         mContext=context;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ticketList = db.getAllTicketLists();
+        displayTicketLists();
+    }
+
     DatabaseHelper db;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        List<Integer> ticketListIds = new ArrayList<>();
-
         root = FragmentTicketsBinding.inflate(inflater, container, false);
-        RecyclerView ticketRecyclerView = root.rvTickets;
+        ticketRecyclerView = root.rvTickets;
+        checkingListNameEt = getActivity().findViewById(R.id.checkingName);
+        datePickerView = getActivity().findViewById(R.id.datePickerView);
         db = new DatabaseHelper(mContext);
-        List<TicketList> ticketList = db.getAllTicketLists();
+        ticketList = db.getAllTicketLists();
+        displayTicketLists();
+        root.startChecking.setOnClickListener(view -> {
+            if(TextUtils.isEmpty(checkingListNameEt.getText()) || TextUtils.isEmpty(date)){
+                Toast.makeText(mContext,"Enter Checking Name or Event Date", Toast.LENGTH_SHORT).show();
+            }
+            else if(ticketListIds.size()>0) {
+                Event newEvent = new Event(checkingListNameEt.getText().toString(),date,date);
+                eventId = db.insertEvent(newEvent);
+                newEvent.setID(eventId);
+                List<Ticket> tickets = selectedEventTickets(ticketListIds);
+                Intent intent = new Intent(getActivity(), ScannerActivity.class);
+                intent.putExtra("event", newEvent);
+                startActivity(intent);
+            }
+            else
+            {
+                Toast.makeText(mContext, "Select at least one Ticket List", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        datePickerView.setOnClickListener(view -> {
+            selectDate();
+        });
+
+        onDateSetListener = (datePicker, year, month, day) -> {
+            month = month+1;
+            date = month + "/" + day + "/" + year;
+        };
+        return root.getRoot();
+    }
+
+    public void displayTicketLists(){
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         ticketRecyclerView.setLayoutManager(gridLayoutManager);
 
@@ -64,20 +123,30 @@ public class TicketsFragment extends Fragment {
             }
         });
         ticketRecyclerView.setAdapter(gridAdapter);
-        root.startChecking.setOnClickListener(view -> {
-            List<Ticket> tickets = selectedEventTickets(ticketListIds);
-            Intent intent = new Intent(getActivity(), ScannerActivity.class);
-            intent.putExtra("ticketList", (Serializable) tickets);
-            startActivity(intent);
-        });
-        return root.getRoot();
     }
 
+    public void selectDate(){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-    public List<Ticket> selectedEventTickets(List<Integer> eventIds){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                onDateSetListener,
+                year,month,day);
+        datePickerDialog.getWindow().setBackgroundDrawable(
+                new ColorDrawable((Color.TRANSPARENT))
+        );
+        datePickerDialog.show();
+    }
+
+    public List<Ticket> selectedEventTickets(List<Integer> ticketListIds){
         List<Ticket> tickets = new ArrayList<>();
-        for (Integer eventId : eventIds){
-            tickets.addAll(db.getTicketListById(eventId));
+        for (Integer ticketListId : ticketListIds){
+            tickets.addAll(db.getTicketListById(ticketListId));
+            CheckingTicketList checkingTicketList = new CheckingTicketList(ticketListId,eventId);
+            db.CheckingTicketListRelation(checkingTicketList);
         }
         return tickets;
     }

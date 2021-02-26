@@ -13,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -26,6 +29,8 @@ public class StartNewChecking extends Fragment {
 
     Button addButton;
     private ActivityStartNewCheckingBinding binding;
+    EditText newEvent;
+    ImageView calendarIcon;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -38,6 +43,8 @@ public class StartNewChecking extends Fragment {
         TabLayout tabLayout = binding.tabLayout;
         addButton = binding.addTickets;
         ViewPager2 viewPager = binding.viewPager;
+        newEvent = binding.checkingName;
+        calendarIcon = binding.datePickerView;
         PageAdapter pageAdapter = new PageAdapter(getActivity());
         viewPager.setAdapter(pageAdapter);
         TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {

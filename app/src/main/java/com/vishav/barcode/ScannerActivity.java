@@ -16,6 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
+import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.databinding.ActivityMain2Binding;
 
@@ -35,13 +36,15 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         bottomNavigationView = binding.bottomNavigationBar;
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         Intent intent = getIntent();
+        Event event = (Event) intent.getSerializableExtra("event");
         List<Ticket> ticketList = (List<Ticket>) intent.getSerializableExtra("ticketList");
         HomeFragment homeFragment = new HomeFragment();
-        if(ticketList == null){
+        if(event == null){
             ticketList = new DatabaseHelper(this).getAllTickets();
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable("ticketList", (Serializable) ticketList);
+        bundle.putSerializable("event", (Serializable) event);
         homeFragment.setArguments(bundle);
         openFragment(homeFragment);
     }
