@@ -1,20 +1,25 @@
 package com.vishav.barcode.Models;
 
-public class Event {
-    private int id;
+import java.io.Serializable;
+
+public class Event implements Serializable {
     private String name;
     private String time;
     private String date;
+    private int ID;
 
-    public Event(int id, String name, String time, String date) {
-        this.id = id;
+    public Event(String name, String time, String date) {
         this.name = name;
         this.time = time;
         this.date = date;
     }
 
-    public int getId() {
-        return id;
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getName() {
