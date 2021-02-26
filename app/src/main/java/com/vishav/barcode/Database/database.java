@@ -22,7 +22,6 @@ public class database extends SQLiteOpenHelper{
     static final String checkingName = "CheckingName";
     static final String checkingTime = "CheckingTime";
     static final String checkingDate = "CheckingDate";
-    static final String checkingTicketListId = "CheckingTicketListID";
     static final String checkingCardListId = "CheckingCardListID";
     static final String checkingScanningId = "CheckingScanningID";
 
@@ -69,8 +68,14 @@ public class database extends SQLiteOpenHelper{
     static final String ListCreated = "Created";
     static final String ListUpdated = "Updated";
 
+    static final String CheckingTicketListTableRelationship = "CheckingTicketListRelationshipTable";
+    static final String CheckingTicketListPrimaryId = "PrimaryKey";
+    static final String CheckingTicketListId = "checkinngTicketListId";
+    static final String CheckingListEventId = "checkingListId";
+
+
     public database(Context context) {
-        super(context, dbName, null, 11);
+        super(context, dbName, null, 16);
     }
 
     @Override
@@ -81,9 +86,7 @@ public class database extends SQLiteOpenHelper{
                 checkingTime + " TIMESTAMP," +
                 checkingDate + " DATE,"+
                 checkingCardListId + " INTEGER,"+
-                checkingTicketListId + " INTEGER,"+
                 checkingScanningId + " INTEGER," +
-                " FOREIGN KEY ("+ checkingTicketListId +") REFERENCES "+ TicketListTable + " ("+TicketListPrimaryID+")," +
                 " FOREIGN KEY ("+ checkingCardListId +") REFERENCES "+ ELBCardListTable + " ("+ELBPrimaryID+"));");
 
         sqLiteDatabase.execSQL("CREATE TABLE " + scanningTable +
@@ -108,6 +111,14 @@ public class database extends SQLiteOpenHelper{
                 ELBListName + " TEXT,"+
                 ListCreated + " DATETIME,"+
                 ListUpdated + " DATETIME );"
+        );
+
+        sqLiteDatabase.execSQL("CREATE TABLE " + CheckingTicketListTableRelationship +
+                " (" + CheckingTicketListPrimaryId + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                CheckingListEventId + " INTEGER,"+
+                CheckingTicketListId +" INTEGER," +
+                        " FOREIGN KEY ("+ CheckingListEventId +") REFERENCES "+ checkingTable + " ("+checkingID+")," +
+                " FOREIGN KEY ("+ CheckingTicketListId +") REFERENCES "+ TicketListTable + " ("+TicketListPrimaryID+"));"
         );
 
 
@@ -143,6 +154,7 @@ public class database extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL("Drop TABLE IF EXISTS " + TicketListTable);
         sqLiteDatabase.execSQL("Drop TABLE IF EXISTS " + ELBCardListTable);
         sqLiteDatabase.execSQL("Drop TABLE IF EXISTS " + ELBCardTable);
+        sqLiteDatabase.execSQL("Drop TABLE IF EXISTS " + CheckingTicketListTableRelationship);
         onCreate(sqLiteDatabase);
     }
 
