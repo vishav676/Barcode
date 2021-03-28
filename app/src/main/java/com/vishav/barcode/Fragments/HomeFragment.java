@@ -310,13 +310,19 @@ public class HomeFragment extends Fragment {
         ticketNum.setText(barcode.getRawValue());
         tvName.setText(barcode.getRawValue());
         tv_lastCheck.setText(time);
-        ticketType.setText(event.getName());
+        if(event != null) ticketType.setText(event.getName());
+        else
+            ticketType.setText(getEventName(barcode.getRawValue()));
         root.checkedInCount.setText(result.size() + "/"+ ticketList.size());
     }
 
     private void delay(){
         final Handler handler = new Handler();
         handler.postDelayed(this::configImageAnalysis,3000);
+    }
+
+    private String getEventName(String ticketNo){
+        return db.getEventInfo(ticketNo);
     }
 
     private void delay(CardView cardView){
