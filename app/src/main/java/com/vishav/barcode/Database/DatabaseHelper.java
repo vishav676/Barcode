@@ -116,7 +116,7 @@ public class DatabaseHelper extends database{
         return events;
     }
 
-    /*public List<Event> getEventName(){
+    public List<Event> getEvents(){
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "Select * from " + checkingTable;
@@ -131,7 +131,7 @@ public class DatabaseHelper extends database{
         cursor.close();
         db.close();
         return events;
-    }*/
+    }
 
     public List<Ticket> getEventTickets(int id){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -171,6 +171,21 @@ public class DatabaseHelper extends database{
         db.close();
         return tickets;
 
+    }
+
+    public List<String> getAllCheckingNames()
+    {
+        List<String> checkings = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "Select * from " + checkingTable;
+        Cursor cursor = db.rawQuery(query,null);
+        int count = cursor.getCount();
+        while (cursor.moveToNext()){
+            checkings.add(cursor.getString(cursor.getColumnIndex(checkingName)));
+        }
+        cursor.close();
+        db.close();
+        return checkings;
     }
 
     public List<Ticket> cursorToList(Cursor cursor){
