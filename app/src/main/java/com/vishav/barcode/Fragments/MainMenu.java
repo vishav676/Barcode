@@ -47,9 +47,11 @@ public class MainMenu extends Fragment {
         menu.setOnItemClickListener((adapterView, view, position, id) -> {
             if(position == 3)
             {
-                Intent i = new Intent(getActivity(), ScannerActivity.class);
-                startActivity(i);
-
+                /*Intent i = new Intent(getActivity(), ScannerActivity.class);
+                startActivity(i);*/
+                ((MainActivity)getActivity()).openFragment(new CheckingFragment());
+            }else if(position == 1){
+                ((MainActivity)getActivity()).openFragment(new StartNewChecking());
             }else if(position == 2){
                 ((MainActivity)getActivity()).openFragment(new StartNewChecking());
             }else if(position == 7){

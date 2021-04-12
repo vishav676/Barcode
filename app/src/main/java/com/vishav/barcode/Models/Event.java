@@ -8,11 +8,18 @@ public class Event implements Serializable {
     private String date;
     private int ID;
 
+    public Event(int id,String name, String time, String date) {
+        this.name = name;
+        this.time = time;
+        this.date = date;
+        this.ID = id;
+    }
     public Event(String name, String time, String date) {
         this.name = name;
         this.time = time;
         this.date = date;
     }
+
 
     public int getID() {
         return ID;
