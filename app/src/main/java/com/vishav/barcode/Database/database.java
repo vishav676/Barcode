@@ -32,8 +32,9 @@ public class database extends SQLiteOpenHelper{
     static final String scanningCheckedManualy = "ScanningManualy";
     static final String scanningIssue = "ScanningIssue";
     static final String scanningNote = "ScanningNote";
+    static final String scanningTimesUsed = "ScanningUsed";
     static final String scanningCheckingID = "CheckingID";
-
+    static final String scanningTicketNumber = "TicketNumber";
 
     static final String ticketTable = "TicketTable";
     static final String ticketId = "ticketID";
@@ -75,7 +76,7 @@ public class database extends SQLiteOpenHelper{
 
 
     public database(Context context) {
-        super(context, dbName, null, 16);
+        super(context, dbName, null, 22);
     }
 
     @Override
@@ -95,6 +96,8 @@ public class database extends SQLiteOpenHelper{
                 scanningNote + " TEXT," +
                 scanningIssue + " TEXT," +
                 scanningStatus + " BOOLEAN,"+
+                scanningTimesUsed + " INTEGER," +
+                scanningTicketNumber + " TEXT," +
                 scanningCheckingID + " INTEGER,"+
                 scanningTime + " TIMESTAMP, FOREIGN KEY (" + scanningCheckingID +
                 ") REFERENCES "+ checkingTable + " ("+ checkingID +"));");
