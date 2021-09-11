@@ -77,8 +77,8 @@ public class TicketsFragment extends Fragment {
         ticketList = db.getAllTicketLists();
         displayTicketLists();
         root.startChecking.setOnClickListener(view -> {
-            if(TextUtils.isEmpty(checkingListNameEt.getText()) || TextUtils.isEmpty(date)){
-                Toast.makeText(mContext,"Enter Checking Name or Event Date", Toast.LENGTH_SHORT).show();
+            if(TextUtils.isEmpty(checkingListNameEt.getText())){
+                Toast.makeText(mContext,"Enter Checking Name", Toast.LENGTH_SHORT).show();
             }
             else if(ticketListIds.size()>0) {
                 Event newEvent = new Event(checkingListNameEt.getText().toString(),date,date);

@@ -33,12 +33,6 @@ public class LoginActivity extends AppCompatActivity {
         username = binding.username;
         password = binding.password;
         login = binding.login;
-        sharedPreferences = getSharedPreferences(String.valueOf(loggedIn), Context.MODE_PRIVATE);
-        String value = sharedPreferences.getString(loggedIn,"");
-        if(value.equals("true")){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-        }
         login.setOnClickListener(view -> {
             String user = username.getText().toString();
             String pass = password.getText().toString();
@@ -50,5 +44,17 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        sharedPreferences = getSharedPreferences(String.valueOf(loggedIn), Context.MODE_PRIVATE);
+        String value = sharedPreferences.getString(loggedIn,"");
+        if(value.equals("true")){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

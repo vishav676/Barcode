@@ -15,17 +15,15 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Fragments.HomeFragment;
-import com.vishav.barcode.Interfaces.OnFragmentInteraction;
+import com.vishav.barcode.Fragments.MannualChecking;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.databinding.ActivityMain2Binding;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
-public class ScannerActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteraction {
-    private HashMap<String, String> history;
+public class ScannerActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     BottomNavigationView bottomNavigationView;
     private ActivityMain2Binding binding;
     @Override
@@ -58,7 +56,8 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         } else if (itemId == R.id.navigation_dashboard) {
             Toast.makeText(this, "Dashboard", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.navigation_notifications) {
-            Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Mannual", Toast.LENGTH_SHORT).show();
+            openFragment(new MannualChecking());
         }
         return true;
     }
@@ -79,14 +78,9 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_history){
             Intent intent = new Intent(this, history.class);
-            intent.putExtra("history_list", history);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentHistory(HashMap<String, String> s) {
-        history = s;
-    }
 }

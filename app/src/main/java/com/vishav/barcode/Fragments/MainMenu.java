@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.vishav.barcode.MainActivity;
 import com.vishav.barcode.ScannerActivity;
+import com.vishav.barcode.TicketListActivity;
 import com.vishav.barcode.bulkAdd;
 import com.vishav.barcode.databinding.ActivityMainMenuBinding;
 
@@ -56,6 +57,9 @@ public class MainMenu extends Fragment {
                 ((MainActivity)getActivity()).openFragment(new StartNewChecking());
             }else if(position == 7){
                 ((MainActivity)getActivity()).openFragment(new bulkAdd());
+            }else if(position == 4){
+                Intent i = new Intent(getActivity(), TicketListActivity.class);
+                startActivity(i);
             }
         });
 

@@ -46,6 +46,11 @@ public class Ticket implements Serializable {
         return Info;
     }
 
+    public void setUseable(int remained)
+    {
+        useable = remained;
+    }
+
     public String getWarningNote() {
         return warningNote;
     }

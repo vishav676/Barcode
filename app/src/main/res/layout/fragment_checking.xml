@@ -30,6 +30,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:background="@color/colorAccent"
         android:id="@+id/checkingFAB"
+        android:src="@drawable/ic_baseline_qr_code_scanner_24"
         android:layout_margin="16dp"
         android:layout_height="wrap_content"/>
 

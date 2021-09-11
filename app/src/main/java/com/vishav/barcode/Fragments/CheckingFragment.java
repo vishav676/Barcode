@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vishav.barcode.Adapter.CheckingAdapter;
@@ -63,11 +64,17 @@ public class CheckingFragment extends Fragment {
         HomeFragment homeFragment = new HomeFragment();
         checkingFAB.setOnClickListener(view -> {
             int selectedPosition = adapter.getLastSelectedPosition();
-            Event selectedEvent = checkingName.get(selectedPosition);
+            if(selectedPosition < 0)
+            {
+                Toast.makeText(getActivity(),"Please select an event to continue", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Event selectedEvent = checkingName.get(selectedPosition);
 
-            Intent intent = new Intent(getActivity(), ScannerActivity.class);
-            intent.putExtra("event", selectedEvent);
-            startActivity(intent);
+                Intent intent = new Intent(getActivity(), ScannerActivity.class);
+                intent.putExtra("event", selectedEvent);
+                startActivity(intent);
+            }
         });
         return binding.getRoot();
     }

@@ -6,19 +6,20 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.vishav.barcode.Models.History;
 import com.vishav.barcode.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HashMapAdapter extends BaseAdapter {
 
-    private final ArrayList data;
+    private final List<History> data;
 
-    public HashMapAdapter(HashMap<String,String> result) {
-        data = new ArrayList();
-        data.addAll(result.entrySet());
+    public HashMapAdapter(List<History> result) {
+        data = result;
     }
 
     @Override
@@ -27,8 +28,8 @@ public class HashMapAdapter extends BaseAdapter {
     }
 
     @Override
-    public HashMap.Entry getItem(int i) {
-        return (HashMap.Entry) data.get(i);
+    public History getItem(int i) {
+        return data.get(i);
     }
 
     @Override
@@ -42,14 +43,13 @@ public class HashMapAdapter extends BaseAdapter {
 
         if(view == null){
             result = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_layout,viewGroup,false);
-
         }
         else {
             result = view;
         }
-        HashMap.Entry<String,String> item = getItem(i);
-        ((TextView)result.findViewById(R.id.serialTv)).setText(item.getKey());
-        ((TextView)result.findViewById(R.id.ticketTv)).setText(item.getValue());
+        History item = getItem(i);
+        ((TextView)result.findViewById(R.id.serialTv)).setText(item.getTicketID());
+        ((TextView)result.findViewById(R.id.ticketTv)).setText(item.getTime());
         return result;
     }
 }

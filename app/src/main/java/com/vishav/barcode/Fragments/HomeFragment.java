@@ -46,6 +46,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
 import com.vishav.barcode.Models.Event;
+import com.vishav.barcode.Models.History;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
@@ -79,12 +80,13 @@ public class HomeFragment extends Fragment {
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     DatabaseHelper db;
+    private int usedTicketsNumber = 0;
     private FragmentHomeBinding root;
     Event event;
     List<Ticket> ticketList = new ArrayList<>();
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
-    HashMap<String, String> result = new HashMap<>();
+    //HashMap<String, String> result = new HashMap<>();
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -92,6 +94,7 @@ public class HomeFragment extends Fragment {
          db = new DatabaseHelper(getActivity());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,10 +118,11 @@ public class HomeFragment extends Fragment {
             if (event != null)
                 ticketList = db.getEventTickets(event.getID());
         }
+        usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
-        root.checkedInCount.setText(result.size() + "/" + ticketList.size());
+        root.checkedInCount.setText(usedTicketsNumber + "/" + ticketList.size());
         Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO)
                 .withListener(new MultiplePermissionsListener() {
@@ -142,9 +146,6 @@ public class HomeFragment extends Fragment {
 
                     }
                 }).check();
-        OnFragmentInteraction listener = (OnFragmentInteraction)getActivity();
-        assert listener != null;
-        listener.onFragmentHistory(result);
 
         return root.getRoot();
 
@@ -276,13 +277,17 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void validateTicket(FirebaseVisionBarcode barcode){
         Ticket ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
-        if(ticket != null && !result.containsKey(barcode.getRawValue())){
-            validTicket(barcode);
+        if(ticket != null && ticket.getUseable() > 0){
+            validTicket(ticket);
         }
         else if(ticket == null){
             inValidMessageTicketNotFound(barcode);
         }
-        else if(result.containsKey(barcode.getRawValue())){
+        else if(ticket.getUseable() <= 0)
+        {
+            inValidMessageAllTriesUsed(barcode);
+        }
+        else if(db.getOneHistory(ticket) != null){
             inValidMessageAlreadyUsed(barcode);
         }
     }
@@ -297,23 +302,36 @@ public class HomeFragment extends Fragment {
     public void inValidMessageAlreadyUsed(FirebaseVisionBarcode barcode){
         error_cardView.setVisibility(View.VISIBLE);
         issue.setText("Already used");
-        errorDetail.setText(result.get(barcode.getRawValue()));
         errorNum.setText(barcode.getRawValue());
         delay(error_cardView);
     }
 
-    private void validTicket(FirebaseVisionBarcode barcode){
+    public void inValidMessageAllTriesUsed(FirebaseVisionBarcode barcode)
+    {
+        error_cardView.setVisibility(View.VISIBLE);
+        issue.setText("All Tries Used");
+        errorNum.setText(barcode.getRawValue());
+        delay(error_cardView);
+    }
+
+    private void validTicket(Ticket barcode){
         String time = trackHistory();
-        result.put(barcode.getRawValue(), time);
+        history(barcode);
+        db.updateTicketUseable(barcode);
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
-        ticketNum.setText(barcode.getRawValue());
-        tvName.setText(barcode.getRawValue());
+        ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getUseable() + " )");
+        tvName.setText(barcode.getTicketNumber());
         tv_lastCheck.setText(time);
         if(event != null) ticketType.setText(event.getName());
         else
-            ticketType.setText(getEventName(barcode.getRawValue()));
-        root.checkedInCount.setText(result.size() + "/"+ ticketList.size());
+            ticketType.setText(getEventName(barcode.getTicketNumber()));
+        int ticketIndex = ticketList.indexOf(barcode);
+        barcode.setUseable(barcode.getUseable() - 1);
+        ticketList.set(ticketIndex,
+                barcode);
+        usedTicketsNumber++;
+        root.checkedInCount.setText(usedTicketsNumber + "/"+ ticketList.size());
     }
 
     private void delay(){
@@ -342,5 +360,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    private void history(Ticket barcode)
+    {
+        Ticket ticket = db.getTicket(barcode.getTicketNumber());
+        History history = new History("Successful", trackHistory(),"No","Nem", false, event.getID(),ticket.getTicketNumber());
+        db.insertHistory(history);
     }
 }
