@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Adapter.GridAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.EventRepo;
 import com.vishav.barcode.Models.CheckingTicketList;
 import com.vishav.barcode.Models.TicketList;
 import com.vishav.barcode.R;
@@ -73,6 +74,9 @@ public class TicketsFragment extends Fragment {
         ticketRecyclerView = root.rvTickets;
         checkingListNameEt = getActivity().findViewById(R.id.checkingName);
         datePickerView = getActivity().findViewById(R.id.datePickerView);
+
+        EventRepo eventRepo = new EventRepo(getActivity());
+
         db = new DatabaseHelper(mContext);
         ticketList = db.getAllTicketLists();
         displayTicketLists();
@@ -82,7 +86,7 @@ public class TicketsFragment extends Fragment {
             }
             else if(ticketListIds.size()>0) {
                 Event newEvent = new Event(checkingListNameEt.getText().toString(),date,date);
-                eventId = db.insertEvent(newEvent);
+                eventId = eventRepo.insertEvent(newEvent);
                 newEvent.setID(eventId);
                 List<Ticket> tickets = selectedEventTickets(ticketListIds);
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);

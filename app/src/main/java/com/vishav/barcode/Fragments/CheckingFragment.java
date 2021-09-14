@@ -21,6 +21,9 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vishav.barcode.Adapter.CheckingAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.EventRepo;
+import com.vishav.barcode.Database.HistoryRepo;
+import com.vishav.barcode.Database.TicketRepo;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
@@ -40,7 +43,6 @@ public class CheckingFragment extends Fragment {
     Context mContext;
     FloatingActionButton checkingFAB;
     int checkingListId = -1;
-    private FragmentCheckingBinding binding;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -52,13 +54,16 @@ public class CheckingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        binding = FragmentCheckingBinding.inflate(inflater, container, false);
+        com.vishav.barcode.databinding.FragmentCheckingBinding binding = FragmentCheckingBinding.inflate(inflater, container, false);
         recyclerView = binding.checkingNameRecyclerView;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
         db = new DatabaseHelper(mContext);
+
+        EventRepo eventRepo = new EventRepo(mContext);
+
         checkingFAB = binding.checkingFAB;
-        checkingName = db.getEvents();
+        checkingName = eventRepo.getEvents();
         CheckingAdapter adapter = new CheckingAdapter(checkingName, mContext);
         recyclerView.setAdapter(adapter);
         HomeFragment homeFragment = new HomeFragment();

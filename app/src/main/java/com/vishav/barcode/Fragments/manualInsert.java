@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.TicketRepo;
 import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.Models.TicketList;
 import com.vishav.barcode.R;
@@ -36,12 +37,16 @@ public class manualInsert extends Fragment {
     String tickets;
     DatabaseHelper db;
     Context mContext;
+    private TicketRepo ticketRepo;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         root = FragmentManualInsertBinding.inflate(inflater, container, false);
+
+        ticketRepo = new TicketRepo(getActivity());
+
 
         listName = getActivity().findViewById(R.id.newListName);
         root.submitManualBulk.setOnClickListener(view -> {
@@ -118,7 +123,7 @@ public class manualInsert extends Fragment {
             String customer = values[4];
             int useable = Integer.parseInt(values[5].replaceAll("\\s+", "").replace("\n", "").replace("\r", ""));
             Ticket ticket = new Ticket(number, customer, info, warningNote, useable, warning, ticketListId);
-            db.insertTicket(ticket);
+            ticketRepo.insertTicket(ticket);
         }
     }
 }

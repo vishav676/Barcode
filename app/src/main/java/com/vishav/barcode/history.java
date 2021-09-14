@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.vishav.barcode.Adapter.HashMapAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.HistoryRepo;
 import com.vishav.barcode.Models.History;
 import com.vishav.barcode.databinding.ActivityHistoryBinding;
 
@@ -26,7 +27,9 @@ public class history extends AppCompatActivity {
         binding = ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         dbHelper = new DatabaseHelper(this);
-        histories = dbHelper.getAllHistory();
+        HistoryRepo historyRepo = new HistoryRepo(this);
+
+        histories = historyRepo.getAllHistory();
 
         if (histories != null) {
             HashMapAdapter adapter = new HashMapAdapter(histories);

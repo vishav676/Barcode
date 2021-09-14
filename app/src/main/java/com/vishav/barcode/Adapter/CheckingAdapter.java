@@ -4,9 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.RadioButton;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,21 +18,18 @@ import java.util.List;
 public class CheckingAdapter extends RecyclerView.Adapter<CheckingAdapter.ViewHolder> {
 
     private List<Event> checkingNames;
-    private Context context;
     private int lastSelectedPosition = -1;
 
     public CheckingAdapter(List<Event> checkingNames, Context ctx)
     {
         this.checkingNames = checkingNames;
-        this.context = ctx;
     }
     @NonNull
     @Override
     public CheckingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.checking_layout, parent, false);
-        CheckingAdapter.ViewHolder viewHolder = new CheckingAdapter.ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -62,12 +57,9 @@ public class CheckingAdapter extends RecyclerView.Adapter<CheckingAdapter.ViewHo
             super(view);
             button = (RadioButton) view.findViewById(R.id.checkingNameLayout);
             checkingName = (TextView)view.findViewById(R.id.checkingNameTV);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    lastSelectedPosition = getAdapterPosition();
-                    notifyDataSetChanged();
-                }
+            button.setOnClickListener(view1 -> {
+                lastSelectedPosition = getAdapterPosition();
+                notifyDataSetChanged();
             });
         }
     }

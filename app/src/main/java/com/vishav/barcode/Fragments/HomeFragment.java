@@ -44,6 +44,9 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.EventRepo;
+import com.vishav.barcode.Database.HistoryRepo;
+import com.vishav.barcode.Database.TicketRepo;
 import com.vishav.barcode.Interfaces.OnFragmentInteraction;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.History;
@@ -80,6 +83,10 @@ public class HomeFragment extends Fragment {
     FirebaseVisionBarcodeDetectorOptions options;
     FirebaseVisionBarcodeDetector detector;
     DatabaseHelper db;
+    private TicketRepo ticketRepo;
+    private EventRepo eventRepo;
+    private HistoryRepo historyRepo;
+
     private int usedTicketsNumber = 0;
     private FragmentHomeBinding root;
     Event event;
@@ -111,12 +118,16 @@ public class HomeFragment extends Fragment {
         errorNum = root.getRoot().findViewById(R.id.errorNum);
         issue = root.getRoot().findViewById(R.id.issueTv);
 
+        ticketRepo = new TicketRepo(getActivity());
+        eventRepo = new EventRepo(getActivity());
+        historyRepo = new HistoryRepo(getActivity());
+
         Bundle bundle = getArguments();
         if(bundle != null) {
             ticketList = (List<Ticket>) bundle.getSerializable("ticketList");
             event = (Event) bundle.getSerializable("event");
             if (event != null)
-                ticketList = db.getEventTickets(event.getID());
+                ticketList = eventRepo.getEventTickets(event.getID());
         }
         usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
@@ -287,7 +298,7 @@ public class HomeFragment extends Fragment {
         {
             inValidMessageAllTriesUsed(barcode);
         }
-        else if(db.getOneHistory(ticket) != null){
+        else if(historyRepo.getOneHistory(ticket) != null){
             inValidMessageAlreadyUsed(barcode);
         }
     }
@@ -317,7 +328,7 @@ public class HomeFragment extends Fragment {
     private void validTicket(Ticket barcode){
         String time = trackHistory();
         history(barcode);
-        db.updateTicketUseable(barcode);
+        ticketRepo.updateTicketUseable(barcode);
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getUseable() + " )");
@@ -340,7 +351,7 @@ public class HomeFragment extends Fragment {
     }
 
     private String getEventName(String ticketNo){
-        return db.getEventInfo(ticketNo);
+        return eventRepo.getEventInfo(ticketNo);
     }
 
     private void delay(CardView cardView){
@@ -364,8 +375,8 @@ public class HomeFragment extends Fragment {
 
     private void history(Ticket barcode)
     {
-        Ticket ticket = db.getTicket(barcode.getTicketNumber());
+        Ticket ticket = ticketRepo.getTicket(barcode.getTicketNumber());
         History history = new History("Successful", trackHistory(),"No","Nem", false, event.getID(),ticket.getTicketNumber());
-        db.insertHistory(history);
+        historyRepo.insertHistory(history);
     }
 }

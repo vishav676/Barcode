@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.TicketRepo;
 import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Fragments.MannualChecking;
 import com.vishav.barcode.Models.Event;
@@ -38,7 +39,7 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         List<Ticket> ticketList = (List<Ticket>) intent.getSerializableExtra("ticketList");
         HomeFragment homeFragment = new HomeFragment();
         if(event == null){
-            ticketList = new DatabaseHelper(this).getAllTickets();
+            ticketList = new TicketRepo(this).getAllTickets();
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable("ticketList", (Serializable) ticketList);
