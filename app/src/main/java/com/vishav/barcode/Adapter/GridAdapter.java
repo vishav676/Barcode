@@ -1,6 +1,5 @@
 package com.vishav.barcode.Adapter;
 
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Database.Entities.TicketListTable;
-import com.vishav.barcode.Models.Event;
-import com.vishav.barcode.Models.TicketList;
 import com.vishav.barcode.R;
 
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder> {

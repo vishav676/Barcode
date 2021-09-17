@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Database.Entities.CheckingTable;
-import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.R;
 
 import java.util.List;

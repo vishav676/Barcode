@@ -7,13 +7,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.vishav.barcode.Database.Entities.ScanningTable;
-import com.vishav.barcode.Models.History;
 import com.vishav.barcode.R;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HashMapAdapter extends BaseAdapter {
 
