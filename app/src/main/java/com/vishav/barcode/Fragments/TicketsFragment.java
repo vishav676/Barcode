@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -23,18 +22,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Adapter.GridAdapter;
-import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.CheckingTicketListTableRelationship;
 import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
-import com.vishav.barcode.Database.EventRepo;
-import com.vishav.barcode.Models.CheckingTicketList;
-import com.vishav.barcode.Models.TicketList;
 import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
-import com.vishav.barcode.Models.Event;
-import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentTicketsBinding;
 
@@ -48,7 +41,7 @@ public class TicketsFragment extends Fragment {
     private FragmentTicketsBinding root;
     Context mContext;
     EditText checkingListNameEt;
-    List<TicketList> ticketList;
+
     ImageView datePickerView;
     DatePickerDialog.OnDateSetListener onDateSetListener;
     String date;
@@ -70,11 +63,8 @@ public class TicketsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ticketList = db.getAllTicketLists();
-        displayTicketLists();
     }
 
-    DatabaseHelper db;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -85,9 +75,6 @@ public class TicketsFragment extends Fragment {
         checkingListNameEt = getActivity().findViewById(R.id.checkingName);
         datePickerView = getActivity().findViewById(R.id.datePickerView);
 
-        EventRepo eventRepo = new EventRepo(getActivity());
-
-        db = new DatabaseHelper(mContext);
 
         displayTicketLists();
         root.startChecking.setOnClickListener(view -> {

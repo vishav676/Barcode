@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.ViewModels.TicketTableVM;
@@ -34,7 +33,6 @@ public class manualInsert extends Fragment {
         // Required empty public constructor
     }
     String tickets;
-    DatabaseHelper db;
     Context mContext;
     private TicketTableVM ticketTableVm;
     @Override
@@ -95,7 +93,6 @@ public class manualInsert extends Fragment {
         }
     }
     public void save(String regexHeader, String regexData){
-        db = new DatabaseHelper(mContext);
         String[] split = tickets.split(regexHeader);
         if (TextUtils.isEmpty(listName.getText())){
             Toast.makeText(mContext, "Please Provide List Name", Toast.LENGTH_SHORT).show();

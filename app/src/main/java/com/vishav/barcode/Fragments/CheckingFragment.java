@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vishav.barcode.Adapter.CheckingAdapter;
-import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
@@ -32,7 +31,6 @@ public class CheckingFragment extends Fragment {
 
 
     RecyclerView recyclerView;
-    DatabaseHelper db;
     Context mContext;
     FloatingActionButton checkingFAB;
     int checkingListId = -1;

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.vishav.barcode.Adapter.HashMapAdapter;
-import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Database.Entities.ScanningTable;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.ActivityHistoryBinding;
@@ -18,7 +17,7 @@ import java.util.List;
 public class history extends AppCompatActivity {
 
     private ActivityHistoryBinding binding;
-    DatabaseHelper dbHelper;
+
     HashMapAdapter adapter;
     private TicketTableVM ticketTableVM;
     @Override
@@ -26,7 +25,6 @@ public class history extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        dbHelper = new DatabaseHelper(this);
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
 
         ticketTableVM.getAllHistory().observe(this, new Observer<List<ScanningTable>>() {

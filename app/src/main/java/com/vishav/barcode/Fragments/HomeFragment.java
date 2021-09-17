@@ -44,11 +44,9 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.vishav.barcode.Database.DatabaseHelper;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.ScanningTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
-import com.vishav.barcode.Database.EventRepo;
 import com.vishav.barcode.R;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
@@ -80,7 +78,6 @@ public class HomeFragment extends Fragment {
     ProcessCameraProvider cameraProvider;
     BarcodeScannerOptions options;
     BarcodeScanner detector;
-    DatabaseHelper db;
     private TicketTableVM ticketTableVM;
 
     private int usedTicketsNumber = 0;
@@ -94,7 +91,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-         db = new DatabaseHelper(getActivity());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
