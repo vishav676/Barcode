@@ -30,35 +30,33 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
+import com.google.mlkit.vision.barcode.Barcode;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.common.InputImage;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.Entities.CheckingTable;
+import com.vishav.barcode.Database.Entities.ScanningTable;
+import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.Database.EventRepo;
-import com.vishav.barcode.Database.HistoryRepo;
-import com.vishav.barcode.Database.TicketRepo;
-import com.vishav.barcode.Interfaces.OnFragmentInteraction;
-import com.vishav.barcode.Models.Event;
-import com.vishav.barcode.Models.History;
-import com.vishav.barcode.Models.Ticket;
 import com.vishav.barcode.R;
+import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -80,17 +78,15 @@ public class HomeFragment extends Fragment {
     Calendar calendar;
     CardView error_cardView;
     ProcessCameraProvider cameraProvider;
-    FirebaseVisionBarcodeDetectorOptions options;
-    FirebaseVisionBarcodeDetector detector;
+    BarcodeScannerOptions options;
+    BarcodeScanner detector;
     DatabaseHelper db;
-    private TicketRepo ticketRepo;
-    private EventRepo eventRepo;
-    private HistoryRepo historyRepo;
+    private TicketTableVM ticketTableVM;
 
     private int usedTicketsNumber = 0;
     private FragmentHomeBinding root;
-    Event event;
-    List<Ticket> ticketList = new ArrayList<>();
+    CheckingTable event;
+    List<TicketTable> ticketList = new ArrayList<>();
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     @SuppressLint("NewApi")
     //HashMap<String, String> result = new HashMap<>();
@@ -107,6 +103,8 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         root = FragmentHomeBinding.inflate(inflater, container, false);
         cameraPreview = root.CameraViewid;
+        ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
+
         cardView = root.getRoot().findViewById(R.id.barcode_result);
         error_cardView = root.getRoot().findViewById(R.id.barcode_error);
         tvName = cardView.findViewById(R.id.tvname);
@@ -118,18 +116,16 @@ public class HomeFragment extends Fragment {
         errorNum = root.getRoot().findViewById(R.id.errorNum);
         issue = root.getRoot().findViewById(R.id.issueTv);
 
-        ticketRepo = new TicketRepo(getActivity());
-        eventRepo = new EventRepo(getActivity());
-        historyRepo = new HistoryRepo(getActivity());
+
 
         Bundle bundle = getArguments();
         if(bundle != null) {
-            ticketList = (List<Ticket>) bundle.getSerializable("ticketList");
-            event = (Event) bundle.getSerializable("event");
+            ticketList = (List<TicketTable>) bundle.getSerializable("ticketList");
+            event = (CheckingTable) bundle.getSerializable("event");
             if (event != null)
-                ticketList = eventRepo.getEventTickets(event.getID());
+                ticketList = ticketTableVM.getAllEventTickets(event.getCheckingId());
         }
-        usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getUseable() == 0).count();
+        usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getTicketUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
         calendar = Calendar.getInstance();
@@ -170,10 +166,10 @@ public class HomeFragment extends Fragment {
         cameraProviderFuture.addListener(()->{
             try {
                 cameraProvider = cameraProviderFuture.get();
-                options = new FirebaseVisionBarcodeDetectorOptions.Builder()
-                        .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
+                options = new BarcodeScannerOptions.Builder()
+                        .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
                         .build();
-                detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
+                detector = BarcodeScanning.getClient(options);
                 bindPreview(cameraProvider);
 
 
@@ -204,55 +200,36 @@ public class HomeFragment extends Fragment {
                 ,cameraSelector,preview,imageAnalysis);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     private void configImageAnalysis(){
         if(getActivity() != null) {
-            imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getActivity()), image -> {
-                @SuppressLint("UnsafeExperimentalUsageError") Image media = image.getImage();
-                if (media != null) {
-                    Image.Plane[] plane = media.getPlanes();
-                    if (plane.length >= 3) {
-                        for (Image.Plane plane1 : plane) {
-                            plane1.getBuffer().rewind();
+            imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getActivity()),
+                    imageProxy -> {
+                        int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
+                        @SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"}) Image mediaImage = imageProxy.getImage();
+                        if (mediaImage != null) {
+                            InputImage image = InputImage.fromMediaImage(mediaImage,rotationDegrees);
+                            BarcodeScannerOptions barcodeScannerOptions =
+                                    new BarcodeScannerOptions.Builder()
+                                            .setBarcodeFormats(
+                                                    Barcode.FORMAT_CODE_39
+                                            ).build();
+                            BarcodeScanner scanner = BarcodeScanning.getClient(barcodeScannerOptions);
+
+                            Task<List<Barcode>> result = scanner.process(image)
+                                    .addOnSuccessListener(this::processResult)
+                                    .addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(),Toast.LENGTH_SHORT).show())
+                                    .addOnCompleteListener(task -> {
+                                        mediaImage.close();
+                                        imageProxy.close();
+                                    });
+
                         }
-                        int rotation = degreeToFirebaseRotation(image.getImageInfo()
-                                .getRotationDegrees());
-                        FirebaseVisionImage fromMediaImage = FirebaseVisionImage
-                                .fromMediaImage(media, rotation);
-                        processImage(fromMediaImage);
-                    }
-                }
-
-                image.close();
-            });
-        }
-    }
-
-    private void processImage(FirebaseVisionImage visionImageFromFrame) {
-        if(!isDetected)
-        {
-            detector.detectInImage(visionImageFromFrame)
-                    .addOnSuccessListener(this::processResult)
-                    .addOnFailureListener(e -> {
                     });
         }
+
     }
 
-    private int degreeToFirebaseRotation(int degrees)
-    {
-        switch (degrees)
-        {
-            case 0:
-                return FirebaseVisionImageMetadata.ROTATION_0;
-            case 90:
-                return FirebaseVisionImageMetadata.ROTATION_90;
-            case 180:
-                return FirebaseVisionImageMetadata.ROTATION_180;
-            case 270:
-                return FirebaseVisionImageMetadata.ROTATION_270;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
 
 
     private String trackHistory()
@@ -265,14 +242,14 @@ public class HomeFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
-    private void processResult(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
-        if (firebaseVisionBarcodes.size()>0)
+    private void processResult(List<Barcode> barcodes) {
+        if (barcodes.size()>0)
         {
             isDetected = true;
-            for (FirebaseVisionBarcode barcode : firebaseVisionBarcodes)
+            for (Barcode barcode : barcodes)
             {
                 int value_type = barcode.getValueType();
-                if (value_type == FirebaseVisionBarcode.TYPE_TEXT) {
+                if (value_type == Barcode.TYPE_TEXT) {
                     imageAnalysis.clearAnalyzer();
                     if(ticketList.size() > 0){
                         validateTicket(barcode);
@@ -286,38 +263,38 @@ public class HomeFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void validateTicket(FirebaseVisionBarcode barcode){
-        Ticket ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
-        if(ticket != null && ticket.getUseable() > 0){
+    private void validateTicket(Barcode barcode){
+        TicketTable ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
+        if(ticket != null && ticket.getTicketUseable() > 0){
             validTicket(ticket);
         }
         else if(ticket == null){
             inValidMessageTicketNotFound(barcode);
         }
-        else if(ticket.getUseable() <= 0)
+        else if(ticket.getTicketUseable() <= 0)
         {
             inValidMessageAllTriesUsed(barcode);
         }
-        else if(historyRepo.getOneHistory(ticket) != null){
+        else if(ticketTableVM.getOneHistory(ticket.getTicketNumber()) != null){
             inValidMessageAlreadyUsed(barcode);
         }
     }
 
-    public void inValidMessageTicketNotFound(FirebaseVisionBarcode barcode){
+    public void inValidMessageTicketNotFound(Barcode barcode){
         error_cardView.setVisibility(View.VISIBLE);
         issue.setText("Ticket Number not in the list");
         errorNum.setText(barcode.getRawValue());
         delay(error_cardView);
     }
 
-    public void inValidMessageAlreadyUsed(FirebaseVisionBarcode barcode){
+    public void inValidMessageAlreadyUsed(Barcode barcode){
         error_cardView.setVisibility(View.VISIBLE);
         issue.setText("Already used");
         errorNum.setText(barcode.getRawValue());
         delay(error_cardView);
     }
 
-    public void inValidMessageAllTriesUsed(FirebaseVisionBarcode barcode)
+    public void inValidMessageAllTriesUsed(Barcode barcode)
     {
         error_cardView.setVisibility(View.VISIBLE);
         issue.setText("All Tries Used");
@@ -325,20 +302,20 @@ public class HomeFragment extends Fragment {
         delay(error_cardView);
     }
 
-    private void validTicket(Ticket barcode){
+    private void validTicket(TicketTable barcode){
         String time = trackHistory();
         history(barcode);
-        ticketRepo.updateTicketUseable(barcode);
+        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getTicketId());
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
-        ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getUseable() + " )");
+        ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getTicketUseable() + " )");
         tvName.setText(barcode.getTicketNumber());
         tv_lastCheck.setText(time);
-        if(event != null) ticketType.setText(event.getName());
+        if(event != null) ticketType.setText(event.getCheckingName());
         else
             ticketType.setText(getEventName(barcode.getTicketNumber()));
         int ticketIndex = ticketList.indexOf(barcode);
-        barcode.setUseable(barcode.getUseable() - 1);
+        barcode.setTicketUseable(barcode.getTicketUseable() - 1);
         ticketList.set(ticketIndex,
                 barcode);
         usedTicketsNumber++;
@@ -351,7 +328,7 @@ public class HomeFragment extends Fragment {
     }
 
     private String getEventName(String ticketNo){
-        return eventRepo.getEventInfo(ticketNo);
+        return ticketTableVM.getOneEvent(ticketNo).getCheckingName();
     }
 
     private void delay(CardView cardView){
@@ -373,10 +350,18 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void history(Ticket barcode)
+    private void history(TicketTable barcode)
     {
-        Ticket ticket = ticketRepo.getTicket(barcode.getTicketNumber());
-        History history = new History("Successful", trackHistory(),"No","Nem", false, event.getID(),ticket.getTicketNumber());
-        historyRepo.insertHistory(history);
+        TicketTable ticket = ticketTableVM.getOneTicket(barcode.getTicketNumber());
+        ScanningTable history = new ScanningTable("Success", trackHistory(),
+                false,
+                "Nem",
+                "no",
+                1,
+                event.getCheckingId(),
+                ticket.getTicketNumber());
+
+        ticketTableVM.insert(history);
     }
+
 }

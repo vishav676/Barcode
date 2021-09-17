@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -15,15 +14,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.vishav.barcode.Database.DatabaseHelper;
-import com.vishav.barcode.Database.TicketRepo;
-import com.vishav.barcode.Models.Ticket;
-import com.vishav.barcode.Models.TicketList;
+import com.vishav.barcode.Database.Entities.TicketListTable;
+import com.vishav.barcode.Database.Entities.TicketTable;
+import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
 
 
@@ -37,7 +36,7 @@ public class manualInsert extends Fragment {
     String tickets;
     DatabaseHelper db;
     Context mContext;
-    private TicketRepo ticketRepo;
+    private TicketTableVM ticketTableVm;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,8 +44,7 @@ public class manualInsert extends Fragment {
 
         root = FragmentManualInsertBinding.inflate(inflater, container, false);
 
-        ticketRepo = new TicketRepo(getActivity());
-
+        ticketTableVm = new ViewModelProvider(this).get(TicketTableVM.class);
 
         listName = getActivity().findViewById(R.id.newListName);
         root.submitManualBulk.setOnClickListener(view -> {
@@ -109,9 +107,16 @@ public class manualInsert extends Fragment {
 
     public void saveListToDb(String[] split, String regexData){
         String newListName = listName.getText().toString();
-        TicketList newTicketList = new TicketList(newListName, Calendar.getInstance().getTime().toString(),Calendar.getInstance().getTime().toString());
-        int ticketListId = db.insertTicketList(newTicketList);
-        if(ticketListId<0){
+        //TicketListTable newTicketListTable = new TicketListTable(newListName,
+        //        Calendar.getInstance().getTime().toString(),
+        //        Calendar.getInstance().getTime().toString());
+
+        TicketListTable newTicketListTable = new TicketListTable();
+        newTicketListTable.setTicketListName(newListName);
+        newTicketListTable.setTicketListCreated(Calendar.getInstance().getTime().toString());
+        newTicketListTable.setTicketListUpdated(Calendar.getInstance().getTime().toString());
+        long ticketTableListId = ticketTableVm.insert(newTicketListTable);
+        if(ticketTableListId<=0){
             throw new ArithmeticException();
         }
         for (String s : split) {
@@ -122,8 +127,8 @@ public class manualInsert extends Fragment {
             String warning = values[3];
             String customer = values[4];
             int useable = Integer.parseInt(values[5].replaceAll("\\s+", "").replace("\n", "").replace("\r", ""));
-            Ticket ticket = new Ticket(number, customer, info, warningNote, useable, warning, ticketListId);
-            ticketRepo.insertTicket(ticket);
+            TicketTable ticketTable = new TicketTable(number, customer, info, warningNote, useable, ticketTableListId,warning);
+            ticketTableVm.insert(ticketTable);
         }
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.TicketList;
 import com.vishav.barcode.R;
@@ -21,14 +22,14 @@ import java.util.List;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder> {
 
-    List<TicketList> titles;
+    List<TicketListTable> titles;
 
     public interface OnItemCheckListener{
-        void onItemCheck(int title);
-        void onItemUnCheck(int title);
+        void onItemCheck(long title);
+        void onItemUnCheck(long title);
     }
     private OnItemCheckListener onItemCheckListener;
-    public GridAdapter(List<TicketList> cursor, OnItemCheckListener onItemCheckListener){
+    public GridAdapter(List<TicketListTable> cursor, OnItemCheckListener onItemCheckListener){
         this.titles = cursor;
         this.onItemCheckListener = onItemCheckListener;
     }
@@ -42,7 +43,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder>
     @Override
     public void onBindViewHolder(RowViewHolder holder, int position) {
         holder.title.setText(titles.get(position).getTicketListName());
-        holder.lastUpdated.setText(titles.get(position).getUpdatedAt());
+        holder.lastUpdated.setText(titles.get(position).getTicketListUpdated());
         holder.checkBox.setOnClickListener(view -> {
             boolean isChecked = holder.checkBox.isChecked();
             if(isChecked){

@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.vishav.barcode.Database.Entities.ScanningTable;
 import com.vishav.barcode.Models.History;
 import com.vishav.barcode.R;
 
@@ -16,9 +17,9 @@ import java.util.Map;
 
 public class HashMapAdapter extends BaseAdapter {
 
-    private final List<History> data;
+    private final List<ScanningTable> data;
 
-    public HashMapAdapter(List<History> result) {
+    public HashMapAdapter(List<ScanningTable> result) {
         data = result;
     }
 
@@ -28,7 +29,7 @@ public class HashMapAdapter extends BaseAdapter {
     }
 
     @Override
-    public History getItem(int i) {
+    public ScanningTable getItem(int i) {
         return data.get(i);
     }
 
@@ -47,9 +48,9 @@ public class HashMapAdapter extends BaseAdapter {
         else {
             result = view;
         }
-        History item = getItem(i);
-        ((TextView)result.findViewById(R.id.serialTv)).setText(item.getTicketID());
-        ((TextView)result.findViewById(R.id.ticketTv)).setText(item.getTime());
+        ScanningTable item = getItem(i);
+        ((TextView)result.findViewById(R.id.serialTv)).setText(item.getScanningTicketNumber());
+        ((TextView)result.findViewById(R.id.ticketTv)).setText(item.getScanningTime());
         return result;
     }
 }

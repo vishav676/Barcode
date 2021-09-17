@@ -17,11 +17,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Adapter.GridAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
+import com.vishav.barcode.Database.Entities.CheckingTable;
+import com.vishav.barcode.Database.Entities.CheckingTicketListTableRelationship;
+import com.vishav.barcode.Database.Entities.TicketListTable;
+import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.Database.EventRepo;
 import com.vishav.barcode.Models.CheckingTicketList;
 import com.vishav.barcode.Models.TicketList;
@@ -29,6 +35,7 @@ import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.Models.Ticket;
+import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentTicketsBinding;
 
 import java.io.Serializable;
@@ -46,8 +53,10 @@ public class TicketsFragment extends Fragment {
     DatePickerDialog.OnDateSetListener onDateSetListener;
     String date;
     RecyclerView ticketRecyclerView;
-    List<Integer> ticketListIds = new ArrayList<>();
+    private TicketTableVM ticketTableVm;
+    List<Long> ticketListIds = new ArrayList<>();
     int eventId;
+    long newEventId;
 
     public TicketsFragment() {
         // Required empty public constructor
@@ -72,25 +81,26 @@ public class TicketsFragment extends Fragment {
 
         root = FragmentTicketsBinding.inflate(inflater, container, false);
         ticketRecyclerView = root.rvTickets;
+        ticketTableVm = new ViewModelProvider(this).get(TicketTableVM.class);
         checkingListNameEt = getActivity().findViewById(R.id.checkingName);
         datePickerView = getActivity().findViewById(R.id.datePickerView);
 
         EventRepo eventRepo = new EventRepo(getActivity());
 
         db = new DatabaseHelper(mContext);
-        ticketList = db.getAllTicketLists();
+
         displayTicketLists();
         root.startChecking.setOnClickListener(view -> {
             if(TextUtils.isEmpty(checkingListNameEt.getText())){
                 Toast.makeText(mContext,"Enter Checking Name", Toast.LENGTH_SHORT).show();
             }
             else if(ticketListIds.size()>0) {
-                Event newEvent = new Event(checkingListNameEt.getText().toString(),date,date);
-                eventId = eventRepo.insertEvent(newEvent);
-                newEvent.setID(eventId);
-                List<Ticket> tickets = selectedEventTickets(ticketListIds);
+                CheckingTable event = new CheckingTable(checkingListNameEt.getText().toString(),date,date);
+                newEventId = ticketTableVm.insert(event);
+                event.setCheckingId(newEventId);;
+                List<TicketTable> tickets = selectedEventTickets(ticketListIds);
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
-                intent.putExtra("event", newEvent);
+                intent.putExtra("event", (Serializable) event);
                 startActivity(intent);
             }
             else
@@ -115,18 +125,24 @@ public class TicketsFragment extends Fragment {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         ticketRecyclerView.setLayoutManager(gridLayoutManager);
 
-        GridAdapter gridAdapter = new GridAdapter(ticketList, new GridAdapter.OnItemCheckListener() {
+        ticketTableVm.getAllTicketList().observe(getActivity(), new Observer<List<TicketListTable>>() {
             @Override
-            public void onItemCheck(int title) {
-                ticketListIds.add(title);
-            }
+            public void onChanged(List<TicketListTable> ticketListTables) {
+                GridAdapter gridAdapter = new GridAdapter(ticketListTables, new GridAdapter.OnItemCheckListener() {
+                    @Override
+                    public void onItemCheck(long title) {
+                        ticketListIds.add(title);
+                    }
 
-            @Override
-            public void onItemUnCheck(int title) {
-                ticketListIds.remove(Integer.valueOf(title));
+                    @Override
+                    public void onItemUnCheck(long title) {
+                        ticketListIds.remove(title);
+                    }
+                });
+                ticketRecyclerView.setAdapter(gridAdapter);
             }
         });
-        ticketRecyclerView.setAdapter(gridAdapter);
+
     }
 
     public void selectDate(){
@@ -145,12 +161,12 @@ public class TicketsFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    public List<Ticket> selectedEventTickets(List<Integer> ticketListIds){
-        List<Ticket> tickets = new ArrayList<>();
-        for (Integer ticketListId : ticketListIds){
-            tickets.addAll(db.getTicketListById(ticketListId));
-            CheckingTicketList checkingTicketList = new CheckingTicketList(ticketListId,eventId);
-            db.CheckingTicketListRelation(checkingTicketList);
+    public List<TicketTable> selectedEventTickets(List<Long> ticketListIds){
+        List<TicketTable> tickets = new ArrayList<>();
+        for (Long ticketListId : ticketListIds){
+            tickets.addAll(ticketTableVm.getAllTicketsFromListID(ticketListId));
+            CheckingTicketListTableRelationship checkingTicketListTableRelationship = new CheckingTicketListTableRelationship(ticketListId,newEventId);
+            ticketTableVm.insert(checkingTicketListTableRelationship);
         }
         return tickets;
     }

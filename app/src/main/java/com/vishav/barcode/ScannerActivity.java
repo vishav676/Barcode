@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,12 +14,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.vishav.barcode.Database.DatabaseHelper;
-import com.vishav.barcode.Database.TicketRepo;
+import com.vishav.barcode.Database.Entities.CheckingTable;
+import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.Fragments.HomeFragment;
 import com.vishav.barcode.Fragments.MannualChecking;
-import com.vishav.barcode.Models.Event;
-import com.vishav.barcode.Models.Ticket;
+import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.ActivityMain2Binding;
 
 import java.io.Serializable;
@@ -27,19 +27,21 @@ import java.util.List;
 public class ScannerActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     BottomNavigationView bottomNavigationView;
     private ActivityMain2Binding binding;
+    private TicketTableVM ticketTableVm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMain2Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         bottomNavigationView = binding.bottomNavigationBar;
+        ticketTableVm = new ViewModelProvider(this).get(TicketTableVM.class);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         Intent intent = getIntent();
-        Event event = (Event) intent.getSerializableExtra("event");
-        List<Ticket> ticketList = (List<Ticket>) intent.getSerializableExtra("ticketList");
+        CheckingTable event = (CheckingTable) intent.getSerializableExtra("event");
+        List<TicketTable> ticketList = (List<TicketTable>) intent.getSerializableExtra("ticketList");
         HomeFragment homeFragment = new HomeFragment();
         if(event == null){
-            ticketList = new TicketRepo(this).getAllTickets();
+            ticketList = ticketTableVm.getAllTickets();
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable("ticketList", (Serializable) ticketList);

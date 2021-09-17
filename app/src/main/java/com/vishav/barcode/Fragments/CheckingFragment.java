@@ -7,42 +7,38 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vishav.barcode.Adapter.CheckingAdapter;
 import com.vishav.barcode.Database.DatabaseHelper;
-import com.vishav.barcode.Database.EventRepo;
-import com.vishav.barcode.Database.HistoryRepo;
-import com.vishav.barcode.Database.TicketRepo;
-import com.vishav.barcode.Models.Event;
+import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
-import com.vishav.barcode.databinding.ActivityMainMenuBinding;
+import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentCheckingBinding;
-import com.vishav.barcode.databinding.FragmentHomeBinding;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CheckingFragment extends Fragment {
 
-    List<Event> checkingName;
+
     RecyclerView recyclerView;
     DatabaseHelper db;
     Context mContext;
     FloatingActionButton checkingFAB;
     int checkingListId = -1;
+    private CheckingAdapter adapter;
+    private TicketTableVM ticketTableVM;
+    List<CheckingTable> allEvents;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -58,14 +54,21 @@ public class CheckingFragment extends Fragment {
         recyclerView = binding.checkingNameRecyclerView;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
-        db = new DatabaseHelper(mContext);
 
-        EventRepo eventRepo = new EventRepo(mContext);
-
+        ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
         checkingFAB = binding.checkingFAB;
-        checkingName = eventRepo.getEvents();
-        CheckingAdapter adapter = new CheckingAdapter(checkingName, mContext);
-        recyclerView.setAdapter(adapter);
+        ticketTableVM.getAllEvents().observe(getActivity(), new Observer<List<CheckingTable>>() {
+            @Override
+            public void onChanged(List<CheckingTable> checkingTables) {
+                if(checkingTables != null) {
+                    allEvents = checkingTables;
+                    adapter = new CheckingAdapter(checkingTables, mContext);
+                    recyclerView.setAdapter(adapter);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         HomeFragment homeFragment = new HomeFragment();
         checkingFAB.setOnClickListener(view -> {
             int selectedPosition = adapter.getLastSelectedPosition();
@@ -74,7 +77,7 @@ public class CheckingFragment extends Fragment {
                 Toast.makeText(getActivity(),"Please select an event to continue", Toast.LENGTH_SHORT).show();
             }
             else {
-                Event selectedEvent = checkingName.get(selectedPosition);
+                CheckingTable selectedEvent = allEvents.get(selectedPosition);
 
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
                 intent.putExtra("event", selectedEvent);

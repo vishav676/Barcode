@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Models.Event;
 import com.vishav.barcode.R;
 
@@ -17,10 +18,10 @@ import java.util.List;
 
 public class CheckingAdapter extends RecyclerView.Adapter<CheckingAdapter.ViewHolder> {
 
-    private List<Event> checkingNames;
+    private List<CheckingTable> checkingNames;
     private int lastSelectedPosition = -1;
 
-    public CheckingAdapter(List<Event> checkingNames, Context ctx)
+    public CheckingAdapter(List<CheckingTable> checkingNames, Context ctx)
     {
         this.checkingNames = checkingNames;
     }
@@ -34,7 +35,7 @@ public class CheckingAdapter extends RecyclerView.Adapter<CheckingAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CheckingAdapter.ViewHolder holder, int position) {
-        holder.checkingName.setText(checkingNames.get(position).getName());
+        holder.checkingName.setText(checkingNames.get(position).getCheckingName());
         holder.button.setChecked(position == lastSelectedPosition);
     }
 
