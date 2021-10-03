@@ -34,4 +34,5 @@ public interface CheckingTableDao {
             "inner join TicketTable on TicketListPrimaryId = TicketListId " +
             "Where TicketNumber = :ticketNumber")
     CheckingTable getEventInfo(String ticketNumber);
+
 }

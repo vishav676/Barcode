@@ -24,4 +24,10 @@ public interface TicketTableDao {
 
     @Query("UPDATE TicketTable SET TicketUseable = :ticketUseable Where TicketID = :id")
     void updateTicketUseable(int ticketUseable, long id);
+
+    @Query("SELECT * from TicketTable inner join TicketListTable on TicketListId = TicketListPrimaryId " +
+            "inner join CheckingTicketListTableRelationship on TicketListPrimaryId = CheckingTicketListId " +
+            "inner join CheckingTable on CheckingListEventID = CheckingID " +
+            "Where TicketNumber = :ticketNumber and CheckingName= :eventName")
+    TicketTable getTicketInfo(String ticketNumber, String eventName);
 }

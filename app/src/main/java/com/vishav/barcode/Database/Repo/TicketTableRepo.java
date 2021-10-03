@@ -41,4 +41,9 @@ public class TicketTableRepo {
             ticketTableDao.insert(ticketTable);
         });
     }
+
+    public TicketTable getTicketInfo(String ticketNumber, String eventName)
+    {
+        return ticketTableDao.getTicketInfo(ticketNumber,eventName);
+    }
 }

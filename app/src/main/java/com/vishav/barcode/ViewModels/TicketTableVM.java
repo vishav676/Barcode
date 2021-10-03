@@ -93,5 +93,10 @@ public class TicketTableVM extends AndroidViewModel {
     }
 
 
+    public TicketTable getTicketInfo(String ticketNumber, String evenName)
+    {
+        return ticketTableRepo.getTicketInfo(ticketNumber, evenName);
+    }
+
 
 }

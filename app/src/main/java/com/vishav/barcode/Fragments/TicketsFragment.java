@@ -127,6 +127,7 @@ public class TicketsFragment extends Fragment {
                     }
                 });
                 ticketRecyclerView.setAdapter(gridAdapter);
+                gridAdapter.notifyDataSetChanged();
             }
         });
 
