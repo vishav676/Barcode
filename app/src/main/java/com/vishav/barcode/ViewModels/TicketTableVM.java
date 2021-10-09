@@ -1,11 +1,14 @@
 package com.vishav.barcode.ViewModels;
 
 import android.app.Application;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.vishav.barcode.DataService;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.CheckingTicketListTableRelationship;
 import com.vishav.barcode.Database.Entities.ScanningTable;
@@ -16,8 +19,15 @@ import com.vishav.barcode.Database.Repo.CheckingTicketListTableRepo;
 import com.vishav.barcode.Database.Repo.ScanningTableRepo;
 import com.vishav.barcode.Database.Repo.TicketListRepo;
 import com.vishav.barcode.Database.Repo.TicketTableRepo;
+import com.vishav.barcode.RetrofitConnection;
+import com.vishav.barcode.TicketListActivity;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TicketTableVM extends AndroidViewModel {
     private TicketTableRepo ticketTableRepo;
@@ -32,7 +42,7 @@ public class TicketTableVM extends AndroidViewModel {
     private final LiveData<List<TicketListTable>> allTicketList;
     private final LiveData<List<CheckingTicketListTableRelationship>> allCheckingTicketList;
 
-    private final LiveData<List<String>> allTicketListNames;
+    private final MutableLiveData<List<TicketListTable>> allTicketListNames = new MutableLiveData<>();
 
     public TicketTableVM(@NonNull Application application) {
         super(application);
@@ -46,7 +56,7 @@ public class TicketTableVM extends AndroidViewModel {
         allHistory = scanningTableRepo.getAllHistory();
         allEvents = checkingTableRepo.getAllEvents();
         allTickets = ticketTableRepo.getAllTickets();
-        allTicketListNames = ticketListRepo.getAllTicketListNames();
+       // allTicketListNames = ticketListRepo.getAllTicketListNames();
         allCheckingTicketList = checkingTicketListTableRepo.getAllEventTickets();
     }
 
@@ -58,7 +68,7 @@ public class TicketTableVM extends AndroidViewModel {
     public LiveData<List<ScanningTable>> getAllHistory(){ return allHistory; }
     public LiveData<List<TicketListTable>> getAllTicketList(){return allTicketList;}
     public LiveData<List<CheckingTicketListTableRelationship>> getAllCheckingTicketList(){return allCheckingTicketList;}
-    public LiveData<List<String>> getAllTicketListName(){return allTicketListNames;}
+    public LiveData<List<TicketListTable>> getAllTicketListName(){return allTicketListNames;}
     public List<TicketTable> getAllTicketsFromListID(long id){return ticketListRepo.getAllTicketsFromListID(id);}
     public List<TicketTable> getAllEventTickets(long id){return checkingTableRepo.getEventTickets(id);}
 
@@ -98,5 +108,27 @@ public class TicketTableVM extends AndroidViewModel {
         return ticketTableRepo.getTicketInfo(ticketNumber, evenName);
     }
 
+    public LiveData<List<TicketListTable>> getNames()
+    {
+        /*DataService service = RetrofitConnection.getRetroFitInstance().create(DataService.class);
+        Call<List<TicketListTable>> call = service.getTicketLists();
+        call.enqueue(new Callback<List<TicketListTable>>() {
+            @Override
+            public void onResponse(Call<List<TicketListTable>> call, Response<List<TicketListTable>> response) {
+                List<TicketListTable> ticketLists = response.body();
+                //Toast.makeText(TicketListActivity.this, "" + response.code()  ,Toast.LENGTH_SHORT).show();
+                allTicketListNames.setValue(response.body());
 
+               // display(ticketListName);
+
+            }
+
+            @Override
+            public void onFailure(Call<List<TicketListTable>> call, Throwable t) {
+                //Toast.makeText(TicketListActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return allTicketListNames;*/
+        return ticketListRepo.getAllTicketsList();
+    }
 }
