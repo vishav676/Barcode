@@ -10,7 +10,7 @@ import java.sql.Date;
 public class ELBCardListTable {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "ELBPrimaryId")
+    @ColumnInfo(name = "ELBPrimaryId", index = true)
     private long elbPrimaryId;
 
     @ColumnInfo(name = "ELBListName")

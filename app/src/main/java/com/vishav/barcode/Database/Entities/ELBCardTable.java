@@ -14,7 +14,7 @@ childColumns = "ELBCardListId"))
 public class ELBCardTable {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "ELBCardID")
+    @ColumnInfo(name = "ELBCardID", index = true)
     private long elbCardId;
 
     @ColumnInfo(name = "ELBCardNumber")

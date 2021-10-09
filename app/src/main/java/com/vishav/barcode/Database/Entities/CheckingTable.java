@@ -13,7 +13,7 @@ public class CheckingTable implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    @ColumnInfo(name = "CheckingID")
+    @ColumnInfo(name = "CheckingID", index = true)
     private long checkingId;
 
     @ColumnInfo(name = "CheckingName")

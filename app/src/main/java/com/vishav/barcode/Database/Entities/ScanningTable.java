@@ -19,7 +19,7 @@ onDelete = CASCADE))
 public class ScanningTable {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "ScanningID")
+    @ColumnInfo(name = "ScanningID", index = true)
     private long scanningID;
 
     @ColumnInfo(name = "ScanningStatus")

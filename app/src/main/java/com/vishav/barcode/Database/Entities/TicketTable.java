@@ -14,7 +14,7 @@ childColumns = "TicketListId"))
 public class TicketTable {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "TicketID")
+    @ColumnInfo(name = "TicketID", index = true)
     private long ticketId;
 
     @ColumnInfo(name = "TicketNumber")

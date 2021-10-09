@@ -10,7 +10,7 @@ import java.sql.Date;
 public class TicketListTable {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "TicketListPrimaryId")
+    @ColumnInfo(name = "TicketListPrimaryId", index = true)
     private long ticketListId;
 
     @ColumnInfo(name = "TicketListName")

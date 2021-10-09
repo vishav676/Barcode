@@ -190,7 +190,7 @@ public class HomeFragment extends Fragment {
 
         configImageAnalysis();
 
-        preview.setSurfaceProvider(cameraPreview.createSurfaceProvider());
+        preview.setSurfaceProvider(cameraPreview.getSurfaceProvider());
 
         camera = cameraProvider.bindToLifecycle((LifecycleOwner)this
                 ,cameraSelector,preview,imageAnalysis);

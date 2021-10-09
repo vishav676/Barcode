@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.opencsv.CSVReader;
+
 import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.ViewModels.TicketTableVM;

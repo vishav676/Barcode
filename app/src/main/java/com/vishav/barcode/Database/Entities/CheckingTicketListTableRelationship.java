@@ -18,7 +18,7 @@ foreignKeys = {
 public class CheckingTicketListTableRelationship {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "PrimaryKey")
+    @ColumnInfo(name = "PrimaryKey", index = true)
     private long checkingTicketListPrimaryId;
 
     @ColumnInfo(name = "CheckingListEventId")
