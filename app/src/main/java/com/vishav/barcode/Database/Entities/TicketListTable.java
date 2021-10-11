@@ -12,9 +12,9 @@ import java.sql.Date;
 public class TicketListTable {
 
     @PrimaryKey(autoGenerate = true)
-    @SerializedName("ticketListId")
+    @SerializedName("id")
     @ColumnInfo(name = "TicketListPrimaryId", index = true)
-    private long ticketListId;
+    private long id;
 
     @ColumnInfo(name = "TicketListName")
     @SerializedName("ticketListName")
@@ -28,8 +28,8 @@ public class TicketListTable {
     @SerializedName("ticketListUpdates")
     private String ticketListUpdated;
 
-    public TicketListTable(long ticketListId,String ticketListName, String ticketListCreated, String ticketListUpdated) {
-        this.ticketListId = ticketListId;
+    public TicketListTable(long id,String ticketListName, String ticketListCreated, String ticketListUpdated) {
+        this.id = id;
         this.ticketListName = ticketListName;
         this.ticketListCreated = ticketListCreated;
         this.ticketListUpdated = ticketListUpdated;
@@ -42,12 +42,12 @@ public class TicketListTable {
     }
     public TicketListTable(){}
 
-    public long getTicketListId() {
-        return ticketListId;
+    public long getId() {
+        return id;
     }
 
-    public void setTicketListId(long ticketListId) {
-        this.ticketListId = ticketListId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTicketListName() {

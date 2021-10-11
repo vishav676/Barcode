@@ -17,9 +17,17 @@ foreignKeys = {
 )
 public class CheckingTicketListTableRelationship {
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "PrimaryKey", index = true)
-    private long checkingTicketListPrimaryId;
+    private long id;
 
     @ColumnInfo(name = "CheckingListEventId")
     private long checkingListEventId;
@@ -32,13 +40,7 @@ public class CheckingTicketListTableRelationship {
         this.checkingTicketListId = checkingTicketListId;
     }
 
-    public long getCheckingTicketListPrimaryId() {
-        return checkingTicketListPrimaryId;
-    }
 
-    public void setCheckingTicketListPrimaryId(long checkingTicketListPrimaryId) {
-        this.checkingTicketListPrimaryId = checkingTicketListPrimaryId;
-    }
 
     public long getCheckingListEventId() {
         return checkingListEventId;

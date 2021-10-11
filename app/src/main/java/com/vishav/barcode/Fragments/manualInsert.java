@@ -22,7 +22,10 @@ import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import retrofit2.Call;
 
 
 public class manualInsert extends Fragment {
@@ -60,7 +63,7 @@ public class manualInsert extends Fragment {
                 }
                 catch (Exception e)
                 {
-                    Toast.makeText(mContext, "Please check the format", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Please check the format" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }else {
@@ -104,14 +107,15 @@ public class manualInsert extends Fragment {
 
     public void saveListToDb(String[] split, String regexData){
         String newListName = listName.getText().toString();
-        //TicketListTable newTicketListTable = new TicketListTable(newListName,
-        //        Calendar.getInstance().getTime().toString(),
-        //        Calendar.getInstance().getTime().toString());
-
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         TicketListTable newTicketListTable = new TicketListTable();
         newTicketListTable.setTicketListName(newListName);
-        newTicketListTable.setTicketListCreated(Calendar.getInstance().getTime().toString());
-        newTicketListTable.setTicketListUpdated(Calendar.getInstance().getTime().toString());
+
+        newTicketListTable.setTicketListCreated(sd.format(Calendar.getInstance().getTime()));
+        newTicketListTable.setTicketListUpdated(sd.format(Calendar.getInstance().getTime()));
+
+        ticketTableVm.insertApi(newTicketListTable);
+
         long ticketTableListId = ticketTableVm.insert(newTicketListTable);
         if(ticketTableListId<=0){
             throw new ArithmeticException();

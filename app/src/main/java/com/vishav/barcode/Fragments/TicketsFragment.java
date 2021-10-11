@@ -84,7 +84,7 @@ public class TicketsFragment extends Fragment {
             else if(ticketListIds.size()>0) {
                 CheckingTable event = new CheckingTable(checkingListNameEt.getText().toString(),date,date);
                 newEventId = ticketTableVm.insert(event);
-                event.setCheckingId(newEventId);;
+                event.setId(newEventId);;
                 List<TicketTable> tickets = selectedEventTickets(ticketListIds);
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
                 intent.putExtra("event", (Serializable) event);

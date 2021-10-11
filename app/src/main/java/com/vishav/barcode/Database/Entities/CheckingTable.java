@@ -14,7 +14,15 @@ public class CheckingTable implements Serializable {
     @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "CheckingID", index = true)
-    private long checkingId;
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     @ColumnInfo(name = "CheckingName")
     private String checkingName;
@@ -37,9 +45,6 @@ public class CheckingTable implements Serializable {
         this.checkingDate = checkingDate;
     }
 
-    public long getCheckingId() {
-        return checkingId;
-    }
 
     public String getCheckingName() {
         return checkingName;
@@ -59,10 +64,6 @@ public class CheckingTable implements Serializable {
 
     public long getCheckingScanningId() {
         return checkingScanningId;
-    }
-
-    public void setCheckingId(long checkingId) {
-        this.checkingId = checkingId;
     }
 
     public void setCheckingName(String checkingName) {

@@ -20,7 +20,7 @@ public class ScanningTable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ScanningID", index = true)
-    private long scanningID;
+    private long id;
 
     @ColumnInfo(name = "ScanningStatus")
     private String scanningStatus;
@@ -57,12 +57,12 @@ public class ScanningTable {
         this.scanningTicketNumber = scanningTicketNumber;
     }
 
-    public long getScanningID() {
-        return scanningID;
+    public long getId() {
+        return id;
     }
 
-    public void setScanningID(long scanningID) {
-        this.scanningID = scanningID;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getScanningStatus() {

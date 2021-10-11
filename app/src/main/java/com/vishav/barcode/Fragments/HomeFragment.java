@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
             ticketList = (List<TicketTable>) bundle.getSerializable("ticketList");
             event = (CheckingTable) bundle.getSerializable("event");
             if (event != null)
-                ticketList = ticketTableVM.getAllEventTickets(event.getCheckingId());
+                ticketList = ticketTableVM.getAllEventTickets(event.getId());
         }
         usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getTicketUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
@@ -301,7 +301,7 @@ public class HomeFragment extends Fragment {
     private void validTicket(TicketTable barcode){
         String time = trackHistory();
         history(barcode);
-        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getTicketId());
+        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getId());
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getTicketUseable() + " )");
@@ -354,7 +354,7 @@ public class HomeFragment extends Fragment {
                 "Nem",
                 "no",
                 1,
-                event.getCheckingId(),
+                event.getId(),
                 ticket.getTicketNumber());
 
         ticketTableVM.insert(history);

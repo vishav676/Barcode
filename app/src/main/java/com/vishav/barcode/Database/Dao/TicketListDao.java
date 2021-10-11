@@ -14,8 +14,11 @@ import java.util.List;
 @Dao
 public interface TicketListDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(TicketListTable ticketListTable);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(List<TicketListTable> ticketListTables);
 
     @Query("SELECT * FROM TicketListTable")
     LiveData<List<TicketListTable>> getAll();

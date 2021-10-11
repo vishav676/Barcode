@@ -15,7 +15,7 @@ public class TicketTable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "TicketID", index = true)
-    private long ticketId;
+    private long id;
 
     @ColumnInfo(name = "TicketNumber")
     private String ticketNumber;
@@ -48,12 +48,12 @@ public class TicketTable {
         this.ticketWarning = ticketWarning;
     }
 
-    public long getTicketId() {
-        return ticketId;
+    public long getId() {
+        return id;
     }
 
-    public void setTicketId(long ticketId) {
-        this.ticketId = ticketId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTicketNumber() {

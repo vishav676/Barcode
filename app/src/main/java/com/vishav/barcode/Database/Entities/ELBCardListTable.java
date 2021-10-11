@@ -11,7 +11,7 @@ public class ELBCardListTable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ELBPrimaryId", index = true)
-    private long elbPrimaryId;
+    private long id;
 
     @ColumnInfo(name = "ELBListName")
     private String elbListName;
@@ -22,13 +22,14 @@ public class ELBCardListTable {
     @ColumnInfo(name = "ListUpdated")
     private String listUpdated;
 
-    public long getElbPrimaryId() {
-        return elbPrimaryId;
+    public long getId() {
+        return id;
     }
 
-    public void setElbPrimaryId(long elbPrimaryId) {
-        this.elbPrimaryId = elbPrimaryId;
+    public void setId(long id) {
+        this.id = id;
     }
+
 
     public String getElbListName() {
         return elbListName;

@@ -110,25 +110,10 @@ public class TicketTableVM extends AndroidViewModel {
 
     public LiveData<List<TicketListTable>> getNames()
     {
-        /*DataService service = RetrofitConnection.getRetroFitInstance().create(DataService.class);
-        Call<List<TicketListTable>> call = service.getTicketLists();
-        call.enqueue(new Callback<List<TicketListTable>>() {
-            @Override
-            public void onResponse(Call<List<TicketListTable>> call, Response<List<TicketListTable>> response) {
-                List<TicketListTable> ticketLists = response.body();
-                //Toast.makeText(TicketListActivity.this, "" + response.code()  ,Toast.LENGTH_SHORT).show();
-                allTicketListNames.setValue(response.body());
+        return ticketListRepo.getAllTicketsListFromApi();
+    }
 
-               // display(ticketListName);
-
-            }
-
-            @Override
-            public void onFailure(Call<List<TicketListTable>> call, Throwable t) {
-                //Toast.makeText(TicketListActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return allTicketListNames;*/
-        return ticketListRepo.getAllTicketsList();
+    public void insertApi(TicketListTable newTicketListTable) {
+        ticketListRepo.insertApi(newTicketListTable);
     }
 }

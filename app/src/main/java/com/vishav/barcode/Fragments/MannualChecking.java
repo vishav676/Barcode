@@ -124,7 +124,7 @@ public class MannualChecking extends Fragment {
     }
 
     private void validTicket(TicketTable barcode) {
-        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getTicketId());
+        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getId());
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         tvName.setText(barcode.getTicketNumber());
@@ -139,7 +139,7 @@ public class MannualChecking extends Fragment {
                 "Nem",
                 "no",
                 1,
-                event.getCheckingId(),
+                event.getId(),
                 ticket.getTicketNumber());
 
         ticketTableVM.insert(history);
