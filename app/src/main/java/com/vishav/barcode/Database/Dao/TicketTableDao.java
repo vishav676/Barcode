@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
 
 import java.util.List;
@@ -15,6 +16,9 @@ public interface TicketTableDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(TicketTable ticketTable);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(List<TicketTable> ticketTables);
 
     @Query("SELECT * FROM TicketTable Where TicketNumber = :tickNumber")
     TicketTable searchTicket(String tickNumber);

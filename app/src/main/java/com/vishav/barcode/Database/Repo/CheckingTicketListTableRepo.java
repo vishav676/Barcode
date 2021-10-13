@@ -27,8 +27,6 @@ public class CheckingTicketListTableRepo {
 
     public void insert(CheckingTicketListTableRelationship CheckingTicketListTableRelationship)
     {
-        AppDatabase.databaseWriteExecutor.execute(() ->{
-            checkingTicketListTableDao.insert(CheckingTicketListTableRelationship);
-        });
+        checkingTicketListTableDao.insert(CheckingTicketListTableRelationship);
     }
 }

@@ -24,9 +24,11 @@ public class TicketListRepo {
     private LiveData<List<String>> allTicketListNames;
     private MutableLiveData<List<TicketListTable>> allTicketsListFromApi = new MutableLiveData<>();
     private DataService dataService;
+    private Application application;
 
     public TicketListRepo(Application application)
     {
+        this.application = application;
         AppDatabase db = AppDatabase.getDatabase(application);
         ticketListDao = db.ticketListDao();
         allTicketList = ticketListDao.getAll();
@@ -57,10 +59,13 @@ public class TicketListRepo {
                 allTicketsListFromApi.setValue(response.body());
                 List<TicketListTable> list = response.body();
                 saveDataToDatabaseFromApi(list);
+                fetchTickets();
+                Log.i("RESPONSE_API_LIST", response.code() +"");
             }
 
             @Override
             public void onFailure(Call<List<TicketListTable>> call, Throwable t) {
+                Log.i("RESPONSE_API_LIST", t.getMessage() +"");
 
             }
         });
@@ -78,7 +83,7 @@ public class TicketListRepo {
 
             @Override
             public void onFailure(Call<TicketListTable> call, Throwable t) {
-
+                Log.i("RESPONSE_API", t.getMessage() +"");
             }
         });
     }
@@ -88,4 +93,8 @@ public class TicketListRepo {
         ticketListDao.insert(ticketListTables);
     }
 
+    private void fetchTickets(){
+        TicketTableRepo ticketsRepo = new TicketTableRepo(application);
+        ticketsRepo.getAllTicketsListFromApi();
+    }
 }

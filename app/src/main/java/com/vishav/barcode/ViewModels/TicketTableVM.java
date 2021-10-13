@@ -68,7 +68,6 @@ public class TicketTableVM extends AndroidViewModel {
     public LiveData<List<ScanningTable>> getAllHistory(){ return allHistory; }
     public LiveData<List<TicketListTable>> getAllTicketList(){return allTicketList;}
     public LiveData<List<CheckingTicketListTableRelationship>> getAllCheckingTicketList(){return allCheckingTicketList;}
-    public LiveData<List<TicketListTable>> getAllTicketListName(){return allTicketListNames;}
     public List<TicketTable> getAllTicketsFromListID(long id){return ticketListRepo.getAllTicketsFromListID(id);}
     public List<TicketTable> getAllEventTickets(long id){return checkingTableRepo.getEventTickets(id);}
 
@@ -115,5 +114,10 @@ public class TicketTableVM extends AndroidViewModel {
 
     public void insertApi(TicketListTable newTicketListTable) {
         ticketListRepo.insertApi(newTicketListTable);
+    }
+
+    public void updateTicketToApi(TicketTable ticketTable)
+    {
+        ticketTableRepo.updateTicketToApi(ticketTable);
     }
 }
