@@ -301,7 +301,7 @@ public class HomeFragment extends Fragment {
     private void validTicket(TicketTable barcode){
         String time = trackHistory();
         history(barcode);
-        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getId());
+        ticketTableVM.updateTicketToApi(barcode);
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getTicketUseable() + " )");

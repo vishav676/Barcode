@@ -84,7 +84,7 @@ public class TicketTableRepo {
             public void onResponse(Call<List<TicketTable>> call, Response<List<TicketTable>> response) {
                 allTicketsFromApi.setValue(response.body());
                 List<TicketTable> list = response.body();
-                saveDataToDatabaseFromApi(list);
+                insert(list);
                 Log.i("RESPONSE_API_LIST", response.code() +"");
             }
 
@@ -97,7 +97,7 @@ public class TicketTableRepo {
         return allTicketsFromApi;
     }
 
-    private void saveDataToDatabaseFromApi(List<TicketTable> ticketTables)
+    public void insert(List<TicketTable> ticketTables)
     {
         ticketTableDao.insert(ticketTables);
     }
@@ -105,7 +105,7 @@ public class TicketTableRepo {
     public void updateTicketToApi(TicketTable ticket)
     {
         ticket.setTicketUseable(ticket.getTicketUseable()-1);
-        Call<TicketTable> ticketCall = dataService.updateTicket(ticket.getId());
+        Call<TicketTable> ticketCall = dataService.updateTicket(ticket.getId(), ticket);
         ticketCall.enqueue(new Callback<TicketTable>() {
             @Override
             public void onResponse(Call<TicketTable> call, Response<TicketTable> response) {

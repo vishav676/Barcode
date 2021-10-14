@@ -58,7 +58,7 @@ public class TicketListRepo {
             public void onResponse(Call<List<TicketListTable>> call, Response<List<TicketListTable>> response) {
                 allTicketsListFromApi.setValue(response.body());
                 List<TicketListTable> list = response.body();
-                saveDataToDatabaseFromApi(list);
+                insert(list);
                 fetchTickets();
                 Log.i("RESPONSE_API_LIST", response.code() +"");
             }
@@ -88,7 +88,7 @@ public class TicketListRepo {
         });
     }
 
-    private void saveDataToDatabaseFromApi(List<TicketListTable> ticketListTables)
+    public void insert(List<TicketListTable> ticketListTables)
     {
         ticketListDao.insert(ticketListTables);
     }

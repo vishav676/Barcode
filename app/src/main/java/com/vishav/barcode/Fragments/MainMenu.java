@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,15 +14,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.vishav.barcode.ApiUtils;
 import com.vishav.barcode.MainActivity;
 import com.vishav.barcode.ScannerActivity;
 import com.vishav.barcode.TicketListActivity;
 import com.vishav.barcode.bulkAdd;
 import com.vishav.barcode.databinding.ActivityMainMenuBinding;
 
+import java.io.IOException;
+
 public class MainMenu extends Fragment {
 
     ListView menu;
+    private MainMenu application;
     private ActivityMainMenuBinding binding;
 
     @Override
@@ -34,12 +39,23 @@ public class MainMenu extends Fragment {
         binding = ActivityMainMenuBinding.inflate(getLayoutInflater());
 
         menu = binding.lvMainMenu;
-
+        application = this;
         String[] menuItems = new String[]{
                 "Easy Checking","Continue Checking", "Start New Checking","Checkings"
                 ,"Tickets Lists", "Cards Lists", "Settings","Add Bulk Tickets"
         };
 
+        binding.syncDb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ApiUtils apiUtils = new ApiUtils(getActivity().getApplication());
+                try {
+                    apiUtils.fetchData();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_list_item_1,android.R.id.text1,menuItems);
 
@@ -65,5 +81,4 @@ public class MainMenu extends Fragment {
 
         return binding.getRoot();
     }
-
 }

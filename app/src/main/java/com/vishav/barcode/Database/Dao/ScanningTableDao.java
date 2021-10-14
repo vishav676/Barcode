@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.vishav.barcode.Database.Entities.ScanningTable;
+import com.vishav.barcode.Database.Entities.TicketListTable;
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ public interface ScanningTableDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(ScanningTable history);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(List<ScanningTable> scanningTables);
 
     @Query("SELECT * FROM ScanningTable Where ScanningTicketNumber = :ticketNumber")
     ScanningTable getHistory(String ticketNumber);

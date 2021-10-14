@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.vishav.barcode.Database.Entities.CheckingTicketListTableRelationship;
+import com.vishav.barcode.Database.Entities.TicketListTable;
 
 import java.util.List;
 
@@ -18,4 +19,7 @@ public interface CheckingTicketListTableDao {
 
     @Query("SELECT * From CheckingTicketListTableRelationship")
     LiveData<List<CheckingTicketListTableRelationship>> getAll();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(List<CheckingTicketListTableRelationship> checkingTicketListTableRelationships);
 }

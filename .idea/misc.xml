@@ -21,6 +21,9 @@
         <entry key="..\:/AndroidStudioProjects/Barcode/app/src/main/res/layout/fragment_manual_insert.xml" value="0.25" />
         <entry key="..\:/AndroidStudioProjects/Barcode/app/src/main/res/layout/result_layout.xml" value="0.12158054711246201" />
         <entry key="..\:/AndroidStudioProjects/Barcode/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1887031408308004" />
+        <entry key="app/src/main/res/layout/activity_main_menu.xml" value="0.1887031408308004" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.1887031408308004" />
       </map>
     </option>
   </component>

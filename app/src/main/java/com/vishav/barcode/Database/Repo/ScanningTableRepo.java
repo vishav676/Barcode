@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import com.vishav.barcode.Database.AppDatabase;
 import com.vishav.barcode.Database.Dao.ScanningTableDao;
 import com.vishav.barcode.Database.Entities.ScanningTable;
+import com.vishav.barcode.Database.Entities.TicketListTable;
 
 import java.util.List;
 
@@ -34,5 +35,10 @@ public class ScanningTableRepo {
         AppDatabase.databaseWriteExecutor.execute(() ->{
             scanningTableDao.insert(scanningTable);
         });
+    }
+
+    public void insert(List<ScanningTable> scanningTables)
+    {
+        scanningTableDao.insert(scanningTables);
     }
 }

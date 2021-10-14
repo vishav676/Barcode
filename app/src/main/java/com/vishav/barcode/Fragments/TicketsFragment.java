@@ -82,7 +82,9 @@ public class TicketsFragment extends Fragment {
                 Toast.makeText(mContext,"Enter Checking Name", Toast.LENGTH_SHORT).show();
             }
             else if(ticketListIds.size()>0) {
-                CheckingTable event = new CheckingTable(checkingListNameEt.getText().toString(),date,date);
+                CheckingTable event = new CheckingTable(checkingListNameEt.getText().toString()
+                        ,date,
+                        date);
                 newEventId = ticketTableVm.insert(event);
                 event.setId(newEventId);;
                 List<TicketTable> tickets = selectedEventTickets(ticketListIds);
@@ -92,7 +94,10 @@ public class TicketsFragment extends Fragment {
             }
             else
             {
-                Toast.makeText(mContext, "Select at least one Ticket List", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext,
+                        "Select at least one Ticket List",
+                        Toast.LENGTH_SHORT)
+                        .show();
             }
         });
 
@@ -112,23 +117,21 @@ public class TicketsFragment extends Fragment {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         ticketRecyclerView.setLayoutManager(gridLayoutManager);
 
-        ticketTableVm.getAllTicketList().observe(getActivity(), new Observer<List<TicketListTable>>() {
-            @Override
-            public void onChanged(List<TicketListTable> ticketListTables) {
-                GridAdapter gridAdapter = new GridAdapter(ticketListTables, new GridAdapter.OnItemCheckListener() {
-                    @Override
-                    public void onItemCheck(long title) {
-                        ticketListIds.add(title);
-                    }
+        ticketTableVm.getAllTicketList().observe(getActivity(), ticketListTables -> {
+            GridAdapter gridAdapter = new GridAdapter(ticketListTables,
+                    new GridAdapter.OnItemCheckListener() {
+                @Override
+                public void onItemCheck(long title) {
+                    ticketListIds.add(title);
+                }
 
-                    @Override
-                    public void onItemUnCheck(long title) {
-                        ticketListIds.remove(title);
-                    }
-                });
-                ticketRecyclerView.setAdapter(gridAdapter);
-                gridAdapter.notifyDataSetChanged();
-            }
+                @Override
+                public void onItemUnCheck(long title) {
+                    ticketListIds.remove(title);
+                }
+            });
+            ticketRecyclerView.setAdapter(gridAdapter);
+            gridAdapter.notifyDataSetChanged();
         });
 
     }
@@ -140,7 +143,8 @@ public class TicketsFragment extends Fragment {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                getActivity(),
+                android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                 onDateSetListener,
                 year,month,day);
         datePickerDialog.getWindow().setBackgroundDrawable(
@@ -153,7 +157,8 @@ public class TicketsFragment extends Fragment {
         List<TicketTable> tickets = new ArrayList<>();
         for (Long ticketListId : ticketListIds){
             tickets.addAll(ticketTableVm.getAllTicketsFromListID(ticketListId));
-            CheckingTicketListTableRelationship checkingTicketListTableRelationship = new CheckingTicketListTableRelationship(ticketListId,newEventId);
+            CheckingTicketListTableRelationship checkingTicketListTableRelationship = new
+                    CheckingTicketListTableRelationship(ticketListId,newEventId);
             ticketTableVm.insert(checkingTicketListTableRelationship);
         }
         return tickets;

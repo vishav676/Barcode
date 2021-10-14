@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
         ELBCardTable.class,
         ScanningTable.class,
         TicketListTable.class,
-        TicketTable.class}, version = 9)
+        TicketTable.class}, version = 10)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract TicketTableDao ticketTableDao();
     public abstract CheckingTableDao checkingTableDao();
