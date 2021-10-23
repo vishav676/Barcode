@@ -1,6 +1,8 @@
 package com.vishav.barcode.ViewModels;
 
 import android.app.Application;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -9,6 +11,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.vishav.barcode.DataService;
+import com.vishav.barcode.Database.Api.CheckingApi;
+import com.vishav.barcode.Database.Api.CheckingListApi;
+import com.vishav.barcode.Database.Api.ScanningApi;
+import com.vishav.barcode.Database.Api.TicketApi;
+import com.vishav.barcode.Database.Api.TicketListApi;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.CheckingTicketListTableRelationship;
 import com.vishav.barcode.Database.Entities.ScanningTable;
@@ -22,6 +29,7 @@ import com.vishav.barcode.Database.Repo.TicketTableRepo;
 import com.vishav.barcode.RetrofitConnection;
 import com.vishav.barcode.TicketListActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +43,12 @@ public class TicketTableVM extends AndroidViewModel {
     private ScanningTableRepo scanningTableRepo;
     private CheckingTableRepo checkingTableRepo;
     private CheckingTicketListTableRepo checkingTicketListTableRepo;
+
+    private TicketApi ticketApi;
+    private TicketListApi ticketListApi;
+    private ScanningApi scanningApi;
+    private CheckingApi checkingApi;
+    private CheckingListApi checkingListApi;
 
     private final List<TicketTable> allTickets;
     private final LiveData<List<CheckingTable>> allEvents;
@@ -51,6 +65,12 @@ public class TicketTableVM extends AndroidViewModel {
         scanningTableRepo = new ScanningTableRepo(application);
         checkingTableRepo = new CheckingTableRepo(application);
         checkingTicketListTableRepo = new CheckingTicketListTableRepo(application);
+
+        ticketApi = new TicketApi(application);
+        ticketListApi = new TicketListApi(application);
+        checkingApi = new CheckingApi(application);
+        scanningApi = new ScanningApi(application);
+        checkingListApi = new CheckingListApi(application);
 
         allTicketList = ticketListRepo.getAllTicketList();
         allHistory = scanningTableRepo.getAllHistory();
@@ -73,18 +93,41 @@ public class TicketTableVM extends AndroidViewModel {
 
     public void insert(TicketTable ticketTable)
     {
-        ticketTableRepo.insert(ticketTable);
+        if(isConnected(getApplication())) {
+            try {
+                ticketApi.insert(ticketTable);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public long insert(CheckingTable event){return checkingTableRepo.insert(event);}
+    public long insert(CheckingTable event){
+        if(isConnected(getApplication()))
+            return checkingApi.insert(event);
+        return 0;
+    }
 
-    public void insert(ScanningTable history){scanningTableRepo.insert(history);}
+    public void insert(ScanningTable history){
+        if(isConnected(getApplication()))
+            scanningApi.insert(history);
+    }
 
-    public long insert(TicketListTable ticketList){ return ticketListRepo.insert(ticketList);}
+    public long insert(TicketListTable ticketList) throws IOException {
+        if(isConnected(getApplication()))
+            return ticketListApi.insertApi(ticketList);
+        return -1;
+    }
 
-    public void insert(CheckingTicketListTableRelationship relationship){checkingTicketListTableRepo.insert(relationship);}
+    public void insert(CheckingTicketListTableRelationship relationship){
+        if(isConnected(getApplication()))
+            checkingListApi.insert(relationship);
+    }
 
-    public void updateTicketUseable(int ticketUseable,long id){ticketTableRepo.updateTicketUseable(ticketUseable, id);}
+    public void updateTicketUseable(int ticketUseable,long id){
+        if(isConnected(getApplication()))
+            ticketTableRepo.updateTicketUseable(ticketUseable, id);
+    }
 
     public TicketTable getOneTicket(String ticketNumber)
     {
@@ -109,15 +152,22 @@ public class TicketTableVM extends AndroidViewModel {
 
     public LiveData<List<TicketListTable>> getNames()
     {
-        return ticketListRepo.getAllTicketsListFromApi();
-    }
-
-    public void insertApi(TicketListTable newTicketListTable) {
-        ticketListRepo.insertApi(newTicketListTable);
+        return ticketListRepo.getAllTicketList();
     }
 
     public void updateTicketToApi(TicketTable ticketTable)
     {
-        ticketTableRepo.updateTicketToApi(ticketTable);
+        if(isConnected(getApplication()))
+            ticketApi.updateTicket(ticketTable);
+    }
+
+    private Boolean isConnected(Application application)
+    {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                application.getSystemService(
+                        Context.CONNECTIVITY_SERVICE
+                );
+        return connectivityManager.getActiveNetworkInfo() != null &&
+                connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

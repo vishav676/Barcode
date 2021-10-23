@@ -1,10 +1,12 @@
 package com.vishav.barcode.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,7 @@ import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -41,7 +44,6 @@ public class manualInsert extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         root = FragmentManualInsertBinding.inflate(inflater, container, false);
 
@@ -114,9 +116,12 @@ public class manualInsert extends Fragment {
         newTicketListTable.setTicketListCreated(sd.format(Calendar.getInstance().getTime()));
         newTicketListTable.setTicketListUpdated(sd.format(Calendar.getInstance().getTime()));
 
-        ticketTableVm.insertApi(newTicketListTable);
-
-        long ticketTableListId = ticketTableVm.insert(newTicketListTable);
+        long ticketTableListId = 0;
+        try {
+            ticketTableListId = ticketTableVm.insert(newTicketListTable);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if(ticketTableListId<=0){
             throw new ArithmeticException();
         }

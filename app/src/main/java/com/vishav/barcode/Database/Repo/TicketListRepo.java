@@ -22,7 +22,6 @@ public class TicketListRepo {
     private TicketListDao ticketListDao;
     private LiveData<List<TicketListTable>> allTicketList;
     private LiveData<List<String>> allTicketListNames;
-    private MutableLiveData<List<TicketListTable>> allTicketsListFromApi = new MutableLiveData<>();
     private DataService dataService;
     private Application application;
 
@@ -38,7 +37,6 @@ public class TicketListRepo {
 
     public LiveData<List<TicketListTable>> getAllTicketList(){return allTicketList;}
 
-    public LiveData<List<String>> getAllTicketListNames(){return allTicketListNames;}
 
     public List<TicketTable> getAllTicketsFromListID(long id)
     {
@@ -50,51 +48,10 @@ public class TicketListRepo {
         return ticketListDao.insert(ticketListTable);
     }
 
-    public LiveData<List<TicketListTable>> getAllTicketsListFromApi()
-    {
-        Call<List<TicketListTable>> call = dataService.getTicketLists();
-        call.enqueue(new Callback<List<TicketListTable>>() {
-            @Override
-            public void onResponse(Call<List<TicketListTable>> call, Response<List<TicketListTable>> response) {
-                allTicketsListFromApi.setValue(response.body());
-                List<TicketListTable> list = response.body();
-                insert(list);
-                fetchTickets();
-                Log.i("RESPONSE_API_LIST", response.code() +"");
-            }
-
-            @Override
-            public void onFailure(Call<List<TicketListTable>> call, Throwable t) {
-                Log.i("RESPONSE_API_LIST", t.getMessage() +"");
-
-            }
-        });
-        return allTicketsListFromApi;
-    }
-
-    public void insertApi(TicketListTable ticketListTable)
-    {
-        Call<TicketListTable> ticketListTableCall = dataService.createTicketList(ticketListTable);
-        ticketListTableCall.enqueue(new Callback<TicketListTable>() {
-            @Override
-            public void onResponse(Call<TicketListTable> call, Response<TicketListTable> response) {
-                Log.i("RESPONSE_API", response.code() +"");
-            }
-
-            @Override
-            public void onFailure(Call<TicketListTable> call, Throwable t) {
-                Log.i("RESPONSE_API", t.getMessage() +"");
-            }
-        });
-    }
 
     public void insert(List<TicketListTable> ticketListTables)
     {
         ticketListDao.insert(ticketListTables);
     }
 
-    private void fetchTickets(){
-        TicketTableRepo ticketsRepo = new TicketTableRepo(application);
-        ticketsRepo.getAllTicketsListFromApi();
-    }
 }

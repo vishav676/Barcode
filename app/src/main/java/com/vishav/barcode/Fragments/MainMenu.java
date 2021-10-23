@@ -51,7 +51,7 @@ public class MainMenu extends Fragment {
                 ApiUtils apiUtils = new ApiUtils(getActivity().getApplication());
                 try {
                     apiUtils.fetchData();
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }

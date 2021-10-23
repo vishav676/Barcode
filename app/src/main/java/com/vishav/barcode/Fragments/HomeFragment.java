@@ -231,10 +231,8 @@ public class HomeFragment extends Fragment {
     private String trackHistory()
     {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat currentDate = new SimpleDateFormat("HH:mm:ss a",
-                Locale.ENGLISH);
-        return currentDate.format(date);
-
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        return sd.format(date);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)

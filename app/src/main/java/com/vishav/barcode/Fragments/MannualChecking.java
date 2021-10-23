@@ -114,6 +114,7 @@ public class MannualChecking extends Fragment {
         issue.setText("Already used");
         errorNum.setText(ticket.getTicketNumber());
         delay(error_cardView);
+        history("Failed",ticket,"Already Used");
     }
 
     public void inValidMessageAllTriesUsed(TicketTable ticket) {
@@ -121,6 +122,7 @@ public class MannualChecking extends Fragment {
         issue.setText("All Tries Used");
         errorNum.setText(ticket.getTicketNumber());
         delay(error_cardView);
+        history("Failed",ticket,"All Tries Used");
     }
 
     private void validTicket(TicketTable barcode) {
@@ -128,47 +130,52 @@ public class MannualChecking extends Fragment {
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         tvName.setText(barcode.getTicketNumber());
-        history(barcode);
+        history("Success",barcode,"nem");
     }
 
-    private void history(TicketTable barcode) {
+    private void history(String status,TicketTable barcode,String issue) {
         TicketTable ticket = ticketTableVM.getOneTicket(barcode.getTicketNumber());
+        int scanningTimesUsed = 1;
         CheckingTable event = ticketTableVM.getOneEvent(barcode.getTicketNumber());
-        ScanningTable history = new ScanningTable("Success", trackHistory(),
+        ScanningTable getHistory = ticketTableVM.getOneHistory(barcode.getTicketNumber());
+        ticketTableVM.updateTicketToApi(barcode);
+        if(getHistory != null)
+        {
+            scanningTimesUsed += getHistory.getScanningTimesUsed();
+        }
+
+        ScanningTable history = new ScanningTable(status, trackHistory(),
                 true,
-                "Nem",
+                issue,
                 "no",
-                1,
+                scanningTimesUsed,
                 event.getId(),
                 ticket.getTicketNumber());
 
         ticketTableVM.insert(history);
     }
 
-    private String trackHistory() {
+    private String trackHistory()
+    {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat currentDate = new SimpleDateFormat("HH:mm:ss a",
-                Locale.ENGLISH);
-        return currentDate.format(date);
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        return sd.format(date);
     }
 
     private void populateSpinner() {
-        ticketTableVM.getAllEvents().observe(getActivity(), new Observer<List<CheckingTable>>() {
-            @Override
-            public void onChanged(List<CheckingTable> checkingTables) {
-                if (checkingTables != null) {
-                    List<String> eventNames = new ArrayList<>();
-                    for (CheckingTable event :
-                            checkingTables) {
-                        eventNames.add(event.getCheckingName());
-                    }
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            getContext(), android.R.layout.simple_spinner_item, eventNames);
-
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    eventSpinner.setAdapter(adapter);
+        ticketTableVM.getAllEvents().observe(getActivity(), checkingTables -> {
+            if (checkingTables != null) {
+                List<String> eventNames = new ArrayList<>();
+                for (CheckingTable event :
+                        checkingTables) {
+                    eventNames.add(event.getCheckingName());
                 }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        getContext(), android.R.layout.simple_spinner_item, eventNames);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                eventSpinner.setAdapter(adapter);
             }
         });
     }

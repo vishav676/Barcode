@@ -43,17 +43,6 @@ public class CheckingTableRepo {
 
     public long insert(CheckingTable checkingTable)
     {
-        dataService.createChecking(checkingTable).enqueue(new Callback<CheckingTable>() {
-            @Override
-            public void onResponse(Call<CheckingTable> call, Response<CheckingTable> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<CheckingTable> call, Throwable t) {
-
-            }
-        });
         return checkingTableDao.insert(checkingTable);
     }
 

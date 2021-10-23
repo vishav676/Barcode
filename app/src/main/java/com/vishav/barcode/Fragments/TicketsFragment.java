@@ -32,6 +32,7 @@ import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentTicketsBinding;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -83,8 +84,8 @@ public class TicketsFragment extends Fragment {
             }
             else if(ticketListIds.size()>0) {
                 CheckingTable event = new CheckingTable(checkingListNameEt.getText().toString()
-                        ,date,
-                        date);
+                        ,DateTime(),
+                        Date());
                 newEventId = ticketTableVm.insert(event);
                 event.setId(newEventId);;
                 List<TicketTable> tickets = selectedEventTickets(ticketListIds);
@@ -162,5 +163,17 @@ public class TicketsFragment extends Fragment {
             ticketTableVm.insert(checkingTicketListTableRelationship);
         }
         return tickets;
+    }
+
+    public String DateTime()
+    {
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        return sd.format(Calendar.getInstance().getTime());
+    }
+
+    public String Date()
+    {
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+        return sd.format(Calendar.getInstance().getTime());
     }
 }
