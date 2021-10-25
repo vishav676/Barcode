@@ -5,6 +5,8 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 @Entity(tableName = "CheckingTicketListTableRelationship",
 foreignKeys = {
         @ForeignKey(entity = CheckingTable.class,
@@ -17,27 +19,30 @@ foreignKeys = {
 )
 public class CheckingTicketListTableRelationship {
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("id")
     @ColumnInfo(name = "PrimaryKey", index = true)
-    private long checkingTicketListPrimaryId;
+    private long id;
 
     @ColumnInfo(name = "CheckingListEventId")
+    @SerializedName("checkingListEventId")
     private long checkingListEventId;
 
     @ColumnInfo(name = "CheckingTicketListId")
+    @SerializedName("checkingTicketListId")
     private long checkingTicketListId;
 
     public CheckingTicketListTableRelationship(long checkingListEventId, long checkingTicketListId) {
         this.checkingListEventId = checkingListEventId;
         this.checkingTicketListId = checkingTicketListId;
-    }
-
-    public long getCheckingTicketListPrimaryId() {
-        return checkingTicketListPrimaryId;
-    }
-
-    public void setCheckingTicketListPrimaryId(long checkingTicketListPrimaryId) {
-        this.checkingTicketListPrimaryId = checkingTicketListPrimaryId;
     }
 
     public long getCheckingListEventId() {

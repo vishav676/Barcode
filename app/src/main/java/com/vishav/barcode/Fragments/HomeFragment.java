@@ -4,6 +4,7 @@ package com.vishav.barcode.Fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Build;
@@ -51,6 +52,7 @@ import com.vishav.barcode.R;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -78,6 +80,7 @@ public class HomeFragment extends Fragment {
     ProcessCameraProvider cameraProvider;
     BarcodeScannerOptions options;
     BarcodeScanner detector;
+
     private TicketTableVM ticketTableVM;
 
     private int usedTicketsNumber = 0;
@@ -97,7 +100,8 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        root = FragmentHomeBinding.inflate(inflater, container, false);
+        if(root == null)
+            root = FragmentHomeBinding.inflate(inflater, container, false);
         cameraPreview = root.CameraViewid;
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
 
@@ -113,14 +117,14 @@ public class HomeFragment extends Fragment {
         issue = root.getRoot().findViewById(R.id.issueTv);
 
 
-
         Bundle bundle = getArguments();
         if(bundle != null) {
             ticketList = (List<TicketTable>) bundle.getSerializable("ticketList");
             event = (CheckingTable) bundle.getSerializable("event");
             if (event != null)
-                ticketList = ticketTableVM.getAllEventTickets(event.getCheckingId());
+                ticketList = ticketTableVM.getAllEventTickets(event.getId());
         }
+
         usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getTicketUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
@@ -231,10 +235,8 @@ public class HomeFragment extends Fragment {
     private String trackHistory()
     {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat currentDate = new SimpleDateFormat("HH:mm:ss a",
-                Locale.ENGLISH);
-        return currentDate.format(date);
-
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        return sd.format(date);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -301,7 +303,7 @@ public class HomeFragment extends Fragment {
     private void validTicket(TicketTable barcode){
         String time = trackHistory();
         history(barcode);
-        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getTicketId());
+        ticketTableVM.updateTicketToApi(barcode);
         cardView.setVisibility(View.VISIBLE);
         delay(cardView);
         ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getTicketUseable() + " )");
@@ -354,10 +356,9 @@ public class HomeFragment extends Fragment {
                 "Nem",
                 "no",
                 1,
-                event.getCheckingId(),
+                event.getId(),
                 ticket.getTicketNumber());
 
         ticketTableVM.insert(history);
     }
-
 }

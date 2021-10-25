@@ -15,7 +15,7 @@ public class ELBCardTable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ELBCardID", index = true)
-    private long elbCardId;
+    private long id;
 
     @ColumnInfo(name = "ELBCardNumber")
     private String elbCardNumber;
@@ -35,12 +35,12 @@ public class ELBCardTable {
     @ColumnInfo(name = "ELBCardWarning")
     private String elbCardWarning;
 
-    public long getElbCardId() {
-        return elbCardId;
+    public long getId() {
+        return id;
     }
 
-    public void setElbCardId(long elbCardId) {
-        this.elbCardId = elbCardId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getElbCardNumber() {

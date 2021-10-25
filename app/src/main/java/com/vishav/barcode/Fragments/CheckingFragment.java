@@ -19,12 +19,14 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vishav.barcode.Adapter.CheckingAdapter;
+import com.vishav.barcode.ApiUtils;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.R;
 import com.vishav.barcode.ScannerActivity;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentCheckingBinding;
 
+import java.io.IOException;
 import java.util.List;
 
 public class CheckingFragment extends Fragment {
@@ -52,7 +54,11 @@ public class CheckingFragment extends Fragment {
         recyclerView = binding.checkingNameRecyclerView;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
-
+        try {
+            new ApiUtils(getActivity().getApplication()).getCheckingTicketRelation();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
         checkingFAB = binding.checkingFAB;
         ticketTableVM.getAllEvents().observe(getActivity(), new Observer<List<CheckingTable>>() {

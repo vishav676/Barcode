@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.sql.Date;
 
@@ -12,24 +14,29 @@ import java.sql.Date;
 public class CheckingTable implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    @NonNull
+    @SerializedName("id")
     @ColumnInfo(name = "CheckingID", index = true)
-    private long checkingId;
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     @ColumnInfo(name = "CheckingName")
+    @SerializedName("checkingName")
     private String checkingName;
 
     @ColumnInfo(name = "CheckingTime")
+    @SerializedName("checkingTime")
     private String checkingTime;
 
     @ColumnInfo(name = "CheckingDate")
+    @SerializedName("checkingDate")
     private String checkingDate;
-
-    @ColumnInfo(name = "CheckingCardListId")
-    private long checkingCardListId;
-
-    @ColumnInfo(name = "CheckingScanningId")
-    private long checkingScanningId;
 
     public CheckingTable(String checkingName, String checkingTime, String checkingDate) {
         this.checkingName = checkingName;
@@ -37,9 +44,6 @@ public class CheckingTable implements Serializable {
         this.checkingDate = checkingDate;
     }
 
-    public long getCheckingId() {
-        return checkingId;
-    }
 
     public String getCheckingName() {
         return checkingName;
@@ -53,18 +57,6 @@ public class CheckingTable implements Serializable {
         return checkingDate;
     }
 
-    public long getCheckingCardListId() {
-        return checkingCardListId;
-    }
-
-    public long getCheckingScanningId() {
-        return checkingScanningId;
-    }
-
-    public void setCheckingId(long checkingId) {
-        this.checkingId = checkingId;
-    }
-
     public void setCheckingName(String checkingName) {
         this.checkingName = checkingName;
     }
@@ -75,14 +67,6 @@ public class CheckingTable implements Serializable {
 
     public void setCheckingDate(String checkingDate) {
         this.checkingDate = checkingDate;
-    }
-
-    public void setCheckingCardListId(long checkingCardListId) {
-        this.checkingCardListId = checkingCardListId;
-    }
-
-    public void setCheckingScanningId(long checkingScanningId) {
-        this.checkingScanningId = checkingScanningId;
     }
 }
 

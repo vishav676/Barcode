@@ -3,6 +3,7 @@ package com.vishav.barcode;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,10 +25,12 @@ import com.vishav.barcode.databinding.ActivityMain2Binding;
 import java.io.Serializable;
 import java.util.List;
 
-public class ScannerActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class ScannerActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,
+        FragmentManager.OnBackStackChangedListener {
     BottomNavigationView bottomNavigationView;
     private ActivityMain2Binding binding;
     private TicketTableVM ticketTableVm;
+    private Bundle bundle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +46,7 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         if(event == null){
             ticketList = ticketTableVm.getAllTickets();
         }
-        Bundle bundle = new Bundle();
+        bundle = new Bundle();
         bundle.putSerializable("ticketList", (Serializable) ticketList);
         bundle.putSerializable("event", (Serializable) event);
         homeFragment.setArguments(bundle);
@@ -55,12 +58,16 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         int itemId = item.getItemId();
         if (itemId == R.id.navigation_home) {
             Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
-            openFragment(new HomeFragment());
+            HomeFragment homeFragment = new HomeFragment();
+            homeFragment.setArguments(bundle);
+            openFragment(homeFragment);
         } else if (itemId == R.id.navigation_dashboard) {
             Toast.makeText(this, "Dashboard", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.navigation_notifications) {
             Toast.makeText(this, "Mannual", Toast.LENGTH_SHORT).show();
-            openFragment(new MannualChecking());
+            MannualChecking mannualChecking = new MannualChecking();
+            mannualChecking.setArguments(bundle);
+            openFragment(mannualChecking);
         }
         return true;
     }
@@ -69,8 +76,20 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         //fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-
     }
+
+
+    @Override
+    public void onBackStackChanged()
+    {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fr = fragmentManager.findFragmentById(R.id.frameLayout);
+        if(fr != null)
+        {
+            fr.onResume();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

@@ -5,9 +5,11 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.vishav.barcode.Database.AppDatabase;
+import com.vishav.barcode.Database.Dao.CheckingTableDao;
 import com.vishav.barcode.Database.Dao.CheckingTicketListTableDao;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.CheckingTicketListTableRelationship;
+import com.vishav.barcode.Database.Entities.TicketListTable;
 
 import java.util.List;
 
@@ -27,8 +29,11 @@ public class CheckingTicketListTableRepo {
 
     public void insert(CheckingTicketListTableRelationship CheckingTicketListTableRelationship)
     {
-        AppDatabase.databaseWriteExecutor.execute(() ->{
-            checkingTicketListTableDao.insert(CheckingTicketListTableRelationship);
-        });
+        checkingTicketListTableDao.insert(CheckingTicketListTableRelationship);
+    }
+
+    public void insert(List<CheckingTicketListTableRelationship> checkingTicketListTableRelationships)
+    {
+        checkingTicketListTableDao.insert(checkingTicketListTableRelationships);
     }
 }

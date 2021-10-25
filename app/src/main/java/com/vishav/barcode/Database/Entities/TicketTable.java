@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
 import com.vishav.barcode.Database.Entities.TicketListTable;
 
 @Entity(tableName = "TicketTable",
@@ -15,30 +16,40 @@ public class TicketTable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "TicketID", index = true)
-    private long ticketId;
+    @SerializedName("id")
+    private long id;
 
+    @SerializedName("ticketNumber")
     @ColumnInfo(name = "TicketNumber")
     private String ticketNumber;
 
     @ColumnInfo(name = "TicketCustomerName")
+    @SerializedName("ticketCustomerName")
     private String ticketCustomerName;
 
     @ColumnInfo(name = "TicketInfo")
+    @SerializedName("ticketInfo")
     private String ticketInfo;
 
     @ColumnInfo(name = "TicketWarningNote")
+    @SerializedName("ticketWarningNote")
     private String ticketWarningNote;
 
     @ColumnInfo(name = "TicketUseable")
+    @SerializedName("ticketUseable")
     private int ticketUseable;
 
     @ColumnInfo(name = "TicketListId")
+    @SerializedName("ticketListId")
     private long ticketListId;
 
     @ColumnInfo(name = "TicketWarning")
+    @SerializedName("ticketWarning")
     private String ticketWarning;
 
-    public TicketTable(String ticketNumber, String ticketCustomerName, String ticketInfo, String ticketWarningNote, int ticketUseable, long ticketListId, String ticketWarning) {
+    public TicketTable(String ticketNumber, String ticketCustomerName, String ticketInfo,
+                       String ticketWarningNote, int ticketUseable, long ticketListId,
+                       String ticketWarning) {
         this.ticketNumber = ticketNumber;
         this.ticketCustomerName = ticketCustomerName;
         this.ticketInfo = ticketInfo;
@@ -48,12 +59,12 @@ public class TicketTable {
         this.ticketWarning = ticketWarning;
     }
 
-    public long getTicketId() {
-        return ticketId;
+    public long getId() {
+        return id;
     }
 
-    public void setTicketId(long ticketId) {
-        this.ticketId = ticketId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTicketNumber() {

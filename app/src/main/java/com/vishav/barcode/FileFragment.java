@@ -128,7 +128,16 @@ public class FileFragment extends Fragment {
             newTicketListTable.setTicketListName(newListName);
             newTicketListTable.setTicketListCreated(Calendar.getInstance().getTime().toString());
             newTicketListTable.setTicketListUpdated(Calendar.getInstance().getTime().toString());
-            long ticketTableListId = ticketTableVm.insert(newTicketListTable);
+
+            long ticketTableListId = 0;
+            try {
+                ticketTableListId = ticketTableVm.insert(newTicketListTable);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(ticketTableListId<=0){
+                throw new ArithmeticException();
+            }
 
             FormulaEvaluator formulaCovertor = workbook.getCreationHelper().createFormulaEvaluator();
             for (int position = 1; position < rowsCount; position++)
@@ -142,19 +151,6 @@ public class FileFragment extends Fragment {
                 int useable = (int)(Float.parseFloat(getCellAsString(row,5,formulaCovertor)));
                 TicketTable ticketTable = new TicketTable(number, customer, info, warningNote, useable, ticketTableListId,warning);
                 ticketTableVm.insert(ticketTable);
-
-                /**
-                 * String[] values = s.split(regexData);
-                 *             String number = values[0].replace("\n", "").replace("\r", "");
-                 *             String info = values[1];
-                 *             String warningNote = values[2];
-                 *             String warning = values[3];
-                 *             String customer = values[4];
-                 *             int useable = Integer.parseInt(values[5].replaceAll("\\s+", "").replace("\n", "").replace("\r", ""));
-                 *             TicketTable ticketTable = new TicketTable(number, customer, info, warningNote, useable, ticketTableListId,warning);
-                 *             ticketTableVm.insert(ticketTable);
-                 */
-
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -7,6 +7,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
 import com.vishav.barcode.Database.Entities.CheckingTable;
 
 import java.sql.Date;
@@ -19,34 +20,45 @@ onDelete = CASCADE))
 public class ScanningTable {
 
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("id")
     @ColumnInfo(name = "ScanningID", index = true)
-    private long scanningID;
+    private long id;
 
     @ColumnInfo(name = "ScanningStatus")
+    @SerializedName("scanningStatus")
     private String scanningStatus;
 
     @ColumnInfo(name = "scanningTime")
+    @SerializedName("scanningTime")
     private String scanningTime;
 
     @ColumnInfo(name = "ScanningCheckedManually")
+    @SerializedName("scanningCheckedMannualy")
     private Boolean scanningCheckedManually;
 
     @ColumnInfo(name = "ScanningIssue")
+    @SerializedName("scanningIssue")
     private String scanningIssue;
 
     @ColumnInfo(name = "ScanningNote")
+    @SerializedName("scanningNote")
     private String scanningNote;
 
     @ColumnInfo(name = "ScanningTimesUsed")
+    @SerializedName("scanningTimesUsed")
     private int scanningTimesUsed;
 
     @ColumnInfo(name = "ScanningCheckingID")
+    @SerializedName("scanningCheckingId")
     private long scanningCheckingID;
 
     @ColumnInfo(name = "ScanningTicketNumber")
+    @SerializedName("scanningTicketNumber")
     private String scanningTicketNumber;
 
-    public ScanningTable(String scanningStatus, String scanningTime, Boolean scanningCheckedManually, String scanningIssue, String scanningNote, int scanningTimesUsed, long scanningCheckingID, String scanningTicketNumber) {
+    public ScanningTable(String scanningStatus, String scanningTime, Boolean scanningCheckedManually,
+                         String scanningIssue, String scanningNote, int scanningTimesUsed,
+                         long scanningCheckingID, String scanningTicketNumber) {
         this.scanningStatus = scanningStatus;
         this.scanningTime = scanningTime;
         this.scanningCheckedManually = scanningCheckedManually;
@@ -55,14 +67,6 @@ public class ScanningTable {
         this.scanningTimesUsed = scanningTimesUsed;
         this.scanningCheckingID = scanningCheckingID;
         this.scanningTicketNumber = scanningTicketNumber;
-    }
-
-    public long getScanningID() {
-        return scanningID;
-    }
-
-    public void setScanningID(long scanningID) {
-        this.scanningID = scanningID;
     }
 
     public String getScanningStatus() {
@@ -79,14 +83,6 @@ public class ScanningTable {
 
     public void setScanningTime(String scanningTime) {
         this.scanningTime = scanningTime;
-    }
-
-    public Boolean getScanningCheckedManually() {
-        return scanningCheckedManually;
-    }
-
-    public void setScanningCheckedManually(Boolean scanningCheckedManually) {
-        this.scanningCheckedManually = scanningCheckedManually;
     }
 
     public String getScanningIssue() {
@@ -127,5 +123,21 @@ public class ScanningTable {
 
     public void setScanningTicketNumber(String scanningTicketNumber) {
         this.scanningTicketNumber = scanningTicketNumber;
+    }
+
+    public Boolean getScanningCheckedManually() {
+        return scanningCheckedManually;
+    }
+
+    public void setScanningCheckedManually(Boolean scanningCheckedMannualy) {
+        this.scanningCheckedManually = scanningCheckedMannualy;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

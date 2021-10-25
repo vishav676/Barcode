@@ -41,9 +41,9 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.RowViewHolder>
         holder.checkBox.setOnClickListener(view -> {
             boolean isChecked = holder.checkBox.isChecked();
             if(isChecked){
-                onItemCheckListener.onItemCheck(titles.get(position).getTicketListId());
+                onItemCheckListener.onItemCheck(titles.get(position).getId());
             }else{
-                onItemCheckListener.onItemUnCheck(titles.get(position).getTicketListId());
+                onItemCheckListener.onItemUnCheck(titles.get(position).getId());
             }
         });
     }

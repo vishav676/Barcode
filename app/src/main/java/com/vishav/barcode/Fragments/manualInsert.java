@@ -1,10 +1,12 @@
 package com.vishav.barcode.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +24,11 @@ import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.R;
 import com.vishav.barcode.databinding.FragmentManualInsertBinding;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import retrofit2.Call;
 
 
 public class manualInsert extends Fragment {
@@ -38,7 +44,6 @@ public class manualInsert extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         root = FragmentManualInsertBinding.inflate(inflater, container, false);
 
@@ -60,7 +65,7 @@ public class manualInsert extends Fragment {
                 }
                 catch (Exception e)
                 {
-                    Toast.makeText(mContext, "Please check the format", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Please check the format" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }else {
@@ -104,15 +109,19 @@ public class manualInsert extends Fragment {
 
     public void saveListToDb(String[] split, String regexData){
         String newListName = listName.getText().toString();
-        //TicketListTable newTicketListTable = new TicketListTable(newListName,
-        //        Calendar.getInstance().getTime().toString(),
-        //        Calendar.getInstance().getTime().toString());
-
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         TicketListTable newTicketListTable = new TicketListTable();
         newTicketListTable.setTicketListName(newListName);
-        newTicketListTable.setTicketListCreated(Calendar.getInstance().getTime().toString());
-        newTicketListTable.setTicketListUpdated(Calendar.getInstance().getTime().toString());
-        long ticketTableListId = ticketTableVm.insert(newTicketListTable);
+
+        newTicketListTable.setTicketListCreated(sd.format(Calendar.getInstance().getTime()));
+        newTicketListTable.setTicketListUpdated(sd.format(Calendar.getInstance().getTime()));
+
+        long ticketTableListId = 0;
+        try {
+            ticketTableListId = ticketTableVm.insert(newTicketListTable);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if(ticketTableListId<=0){
             throw new ArithmeticException();
         }

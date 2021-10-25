@@ -25,4 +25,16 @@
         app:layout_constraintTop_toBottomOf="@id/AppName"
         android:id="@+id/lvMainMenu">
     </ListView>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:text="Sync Db"
+        android:layout_marginBottom="8dp"
+        android:textColor="#fff"
+        android:id="@+id/syncDb"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

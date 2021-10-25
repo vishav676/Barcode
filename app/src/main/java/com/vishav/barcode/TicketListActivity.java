@@ -8,17 +8,26 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.ActivityTicketListBinding;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TicketListActivity extends AppCompatActivity {
 
     private ActivityTicketListBinding binding;
     private TicketTableVM ticketTableVm;
     ArrayAdapter<String> adapter;
+    ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,33 +36,24 @@ public class TicketListActivity extends AppCompatActivity {
         binding = ActivityTicketListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Context mContext = getApplicationContext();
-        ListView lv = binding.ticketListLV;
+        lv = binding.ticketListLV;
         ticketTableVm = new ViewModelProvider(this).get(TicketTableVM.class);
-        //ArrayList<String> ticketListNames = populateString(ticketLists);
-        //List<TicketList> ticketLists = db.getAllTicketLists();
-        ticketTableVm.getAllTicketListName().observe(this, new Observer<List<String>>() {
+        ticketTableVm.getNames().observe(this, new Observer<List<TicketListTable>>() {
             @Override
-            public void onChanged(List<String> strings) {
-                if(strings != null)
-                {
-                    adapter = new ArrayAdapter<String>(mContext,
-                            android.R.layout.simple_list_item_1, android.R.id.text1, strings);
-                    lv.setAdapter(adapter);
+            public void onChanged(List<TicketListTable> ticketListTables) {
+                ArrayList<String> ticketListName = new ArrayList<>();
+                for (TicketListTable list : ticketListTables) {
+                    ticketListName.add(list.getTicketListName());
                 }
-                adapter.notifyDataSetChanged();
+                display(ticketListName);
             }
         });
-
     }
-
-   /* private ArrayList<String> populateString(LiveData<List<TicketListTable>> ticketLists)
+    private void display(ArrayList<String> ticketListNames)
     {
-        ArrayList<String> ticketListNames = new ArrayList<String>();
-        for(TicketListTable ticketList : ticketLists)
-        {
-            ticketListNames.add(ticketList.());
-        }
-        return ticketListNames;
-    }*/
+        adapter = new ArrayAdapter<String>(TicketListActivity.this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, ticketListNames);
+        lv.setAdapter(adapter);
+    }
 
 }

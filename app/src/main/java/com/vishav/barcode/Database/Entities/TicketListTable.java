@@ -4,23 +4,36 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.sql.Date;
 
 @Entity(tableName = "TicketListTable")
 public class TicketListTable {
 
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("id")
     @ColumnInfo(name = "TicketListPrimaryId", index = true)
-    private long ticketListId;
+    private long id;
 
     @ColumnInfo(name = "TicketListName")
+    @SerializedName("ticketListName")
     private String ticketListName;
 
     @ColumnInfo(name = "TicketListCreated")
+    @SerializedName("ticketListCreated")
     private String ticketListCreated;
 
     @ColumnInfo(name = "TicketListUpdated")
+    @SerializedName("ticketListUpdates")
     private String ticketListUpdated;
+
+    public TicketListTable(long id,String ticketListName, String ticketListCreated, String ticketListUpdated) {
+        this.id = id;
+        this.ticketListName = ticketListName;
+        this.ticketListCreated = ticketListCreated;
+        this.ticketListUpdated = ticketListUpdated;
+    }
 
     public TicketListTable(String ticketListName, String ticketListCreated, String ticketListUpdated) {
         this.ticketListName = ticketListName;
@@ -29,12 +42,12 @@ public class TicketListTable {
     }
     public TicketListTable(){}
 
-    public long getTicketListId() {
-        return ticketListId;
+    public long getId() {
+        return id;
     }
 
-    public void setTicketListId(long ticketListId) {
-        this.ticketListId = ticketListId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTicketListName() {
