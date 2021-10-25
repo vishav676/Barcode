@@ -24,8 +24,11 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1887031408308004" />
         <entry key="app/src/main/res/layout/activity_main_menu.xml" value="0.1887031408308004" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.1887031408308004" />
+        <entry key="app/src/main/res/layout/fragment_mannual_checking.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_manual_insert.xml" value="0.14719202898550723" />
         <entry key="app/src/main/res/layout/fragment_tickets.xml" value="0.31476449275362317" />
+        <entry key="app/src/main/res/layout/one_ticket.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/swipe_layout.xml" value="0.21979166666666666" />
       </map>
     </option>
   </component>

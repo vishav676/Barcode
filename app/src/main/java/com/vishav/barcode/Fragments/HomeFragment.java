@@ -4,6 +4,7 @@ package com.vishav.barcode.Fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Build;
@@ -51,6 +52,7 @@ import com.vishav.barcode.R;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -78,6 +80,7 @@ public class HomeFragment extends Fragment {
     ProcessCameraProvider cameraProvider;
     BarcodeScannerOptions options;
     BarcodeScanner detector;
+
     private TicketTableVM ticketTableVM;
 
     private int usedTicketsNumber = 0;
@@ -97,7 +100,8 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        root = FragmentHomeBinding.inflate(inflater, container, false);
+        if(root == null)
+            root = FragmentHomeBinding.inflate(inflater, container, false);
         cameraPreview = root.CameraViewid;
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
 
@@ -113,7 +117,6 @@ public class HomeFragment extends Fragment {
         issue = root.getRoot().findViewById(R.id.issueTv);
 
 
-
         Bundle bundle = getArguments();
         if(bundle != null) {
             ticketList = (List<TicketTable>) bundle.getSerializable("ticketList");
@@ -121,6 +124,7 @@ public class HomeFragment extends Fragment {
             if (event != null)
                 ticketList = ticketTableVM.getAllEventTickets(event.getId());
         }
+
         usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getTicketUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
         errorDetail = root.getRoot().findViewById(R.id.tvErrorDetail);
@@ -357,5 +361,4 @@ public class HomeFragment extends Fragment {
 
         ticketTableVM.insert(history);
     }
-
 }
