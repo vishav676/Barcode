@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 import com.vishav.barcode.Database.Entities.TicketListTable;
 
+import java.util.Objects;
+
 @Entity(tableName = "TicketTable",
 foreignKeys = @ForeignKey(entity = TicketListTable.class,
 parentColumns = "TicketListPrimaryId",
@@ -121,5 +123,26 @@ public class TicketTable {
 
     public void setTicketWarning(String ticketWarning) {
         this.ticketWarning = ticketWarning;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TicketTable that = (TicketTable) o;
+        return ticketUseable == that.ticketUseable
+                && ticketListId == that.ticketListId
+                && ticketNumber.equals(that.ticketNumber)
+                && ticketCustomerName.equals(that.ticketCustomerName)
+                && ticketInfo.equals(that.ticketInfo)
+                && ticketWarningNote.equals(that.ticketWarningNote)
+                && ticketWarning.equals(that.ticketWarning);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ticketNumber, ticketCustomerName, ticketInfo,
+                ticketWarningNote, ticketUseable, ticketListId,
+                ticketWarning);
     }
 }
