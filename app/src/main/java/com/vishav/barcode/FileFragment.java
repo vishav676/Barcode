@@ -39,10 +39,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -123,11 +119,12 @@ public class FileFragment extends Fragment {
             XSSFSheet sheet = workbook.getSheetAt(0);
             int rowsCount = sheet.getPhysicalNumberOfRows();
             String newListName = listName.getText().toString();
+            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
             TicketListTable newTicketListTable = new TicketListTable();
             newTicketListTable.setTicketListName(newListName);
-            newTicketListTable.setTicketListCreated(Calendar.getInstance().getTime().toString());
-            newTicketListTable.setTicketListUpdated(Calendar.getInstance().getTime().toString());
+            newTicketListTable.setTicketListCreated(sd.format(Calendar.getInstance().getTime()));
+            newTicketListTable.setTicketListUpdated(sd.format(Calendar.getInstance().getTime()));
 
             long ticketTableListId = 0;
             try {

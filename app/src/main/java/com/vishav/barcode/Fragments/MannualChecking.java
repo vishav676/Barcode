@@ -46,6 +46,7 @@ public class MannualChecking extends Fragment {
     CardView error_cardView;
     TextView tvName, tvType, tvNo, errorNum, issue, errorDetail;
     CheckingTable event;
+    RecyclerView rv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,8 +60,6 @@ public class MannualChecking extends Fragment {
         tvNo = cardView.findViewById(R.id.number);
         tvName = cardView.findViewById(R.id.tvname);
         tvType = cardView.findViewById(R.id.tvType);
-
-
 
         error_cardView = binding.getRoot().findViewById(R.id.barcode_error);
         errorNum = error_cardView.findViewById(R.id.errorNum);
@@ -85,7 +84,7 @@ public class MannualChecking extends Fragment {
     }
 
     private void displayTickets() {
-        RecyclerView rv = binding.tickets;
+        rv = binding.tickets;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rv.setLayoutManager(linearLayoutManager);
         TicketAdapter adapter = new TicketAdapter(ticketTableVM.getAllEventTickets(event.getId()));
@@ -101,6 +100,7 @@ public class MannualChecking extends Fragment {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         cardView.setVisibility(View.INVISIBLE);
+                        rv.setVisibility(View.VISIBLE);
                     });
                 }
             }
@@ -121,6 +121,7 @@ public class MannualChecking extends Fragment {
 
     public void inValidMessageTicketNotFound() {
         error_cardView.setVisibility(View.VISIBLE);
+        rv.setVisibility(View.INVISIBLE);
         issue.setText("Ticket Number not in the list");
         errorNum.setText(binding.searchTicketET.getText().toString());
         delay(error_cardView);
@@ -129,6 +130,7 @@ public class MannualChecking extends Fragment {
     public void inValidMessageAlreadyUsed(TicketTable ticket) {
         error_cardView.setVisibility(View.VISIBLE);
         issue.setText("Already used");
+        rv.setVisibility(View.INVISIBLE);
         errorNum.setText(ticket.getTicketNumber());
         delay(error_cardView);
         history("Failed",ticket,"Already Used");
@@ -136,6 +138,7 @@ public class MannualChecking extends Fragment {
 
     public void inValidMessageAllTriesUsed(TicketTable ticket) {
         error_cardView.setVisibility(View.VISIBLE);
+        rv.setVisibility(View.INVISIBLE);
         issue.setText("All Tries Used");
         errorNum.setText(ticket.getTicketNumber());
         delay(error_cardView);
@@ -145,6 +148,7 @@ public class MannualChecking extends Fragment {
     private void validTicket(TicketTable barcode) {
         ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getId());
         cardView.setVisibility(View.VISIBLE);
+        rv.setVisibility(View.INVISIBLE);
         delay(cardView);
         tvName.setText(barcode.getTicketNumber());
         history("Success",barcode,"nem");

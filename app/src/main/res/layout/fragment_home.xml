@@ -31,7 +31,8 @@
         android:id="@+id/auto_checking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/checkedIn_count"
-        android:text="@string/auto_checking"/>
+        android:text="@string/auto_checking"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <View
         android:layout_marginTop="8dp"
@@ -53,7 +54,9 @@
             android:text="@string/flash"
             android:id="@+id/toggle_flash"
             android:layout_gravity="end"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
 
         <androidx.camera.view.PreviewView
             android:id="@+id/CameraViewid"

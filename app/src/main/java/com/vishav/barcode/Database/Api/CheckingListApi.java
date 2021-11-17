@@ -37,7 +37,8 @@ public class CheckingListApi {
                                    Response<List<CheckingTicketListTableRelationship>> response) {
                 list.setValue(response.body());
                 List<CheckingTicketListTableRelationship> list = response.body();
-                repo.insert(list);
+                if(list != null && !list.isEmpty())
+                    repo.insert(list);
                 Log.i("RESPONSE_API_LIST", response.code() +"");
             }
 

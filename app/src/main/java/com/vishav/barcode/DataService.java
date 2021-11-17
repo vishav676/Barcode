@@ -63,16 +63,16 @@ public interface DataService {
     Call<CheckingTable> updateChecking(@Path("id") long id, @Body CheckingTable checkingTable);
 
 
-    @Headers({"Authorization: Token 90371c6145a8afe6271035cd8be48a0e888f5dbe"})
+    @Headers({"Authorization: Token " + BuildConfig.API_KEY})
     @POST("checkingTicket/")
     Call<CheckingTicketListTableRelationship> createCheckingTicketList(
             @Body CheckingTicketListTableRelationship checkingTicketListTableRelationship);
 
-    @Headers({"Authorization: Token 90371c6145a8afe6271035cd8be48a0e888f5dbe"})
+    @Headers({"Authorization: Token " + BuildConfig.API_KEY})
     @GET("checkingTicket/")
     Call<List<CheckingTicketListTableRelationship>> getCheckingTicketList();
 
-    @Headers({"Authorization: Token 90371c6145a8afe6271035cd8be48a0e888f5dbe"})
+    @Headers({"Authorization: Token " + BuildConfig.API_KEY})
     @PUT("checkingTicket/{id}")
     Call<CheckingTicketListTableRelationship> updatesCheckingTicketList(@Path("id") long id, @Body
     CheckingTicketListTableRelationship checking);
