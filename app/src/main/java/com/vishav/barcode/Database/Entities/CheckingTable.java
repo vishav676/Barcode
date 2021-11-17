@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.Objects;
 
 @Entity(tableName = "CheckingTable")
 public class CheckingTable implements Serializable {
@@ -68,6 +69,19 @@ public class CheckingTable implements Serializable {
 
     public void setCheckingDate(String checkingDate) {
         this.checkingDate = checkingDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CheckingTable that = (CheckingTable) o;
+        return checkingName.equals(that.checkingName) && checkingTime.equals(that.checkingTime) && checkingDate.equals(that.checkingDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(checkingName, checkingTime, checkingDate);
     }
 }
 
