@@ -8,13 +8,14 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 import com.vishav.barcode.Database.Entities.TicketListTable;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(tableName = "TicketTable",
 foreignKeys = @ForeignKey(entity = TicketListTable.class,
 parentColumns = "TicketListPrimaryId",
 childColumns = "TicketListId"))
-public class TicketTable {
+public class TicketTable implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "TicketID", index = true)

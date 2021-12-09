@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(view -> {
             String user = username.getText().toString();
             String pass = password.getText().toString();
-                if(user.equals("admin") && pass.equals("admin")) {
+                if(checkcredentials(user,pass)) {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     editor.putString(loggedIn, "true");
@@ -57,4 +57,10 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    public Boolean checkcredentials(String user, String pass)
+    {
+        return user.equals("admin") && pass.equals("admin");
+    }
+
 }

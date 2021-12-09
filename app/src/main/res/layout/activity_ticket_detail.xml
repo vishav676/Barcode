@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TicketDetailActivity">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="8dp"
+        android:id="@+id/nameTIL"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="Customer Name"
+            android:textColorHint="@color/colorAccent"
+            android:inputType="text"
+            android:id="@+id/customerName"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/nameTIL"
+        android:padding="8dp"
+        android:id="@+id/numberTIL"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="Ticket Number"
+            android:textColorHint="@color/colorAccent"
+            android:inputType="text"
+            android:id="@+id/ticketNumber"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/numberTIL"
+        android:padding="8dp"
+        android:id="@+id/ticketInfoTIL"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="Ticket Info"
+            android:textColorHint="@color/colorAccent"
+            android:inputType="text"
+            android:id="@+id/ticketInfo"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/ticketInfoTIL"
+        android:padding="8dp"
+        android:id="@+id/ticketWarningTIL"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="Ticket Warning"
+            android:textColorHint="@color/colorAccent"
+            android:inputType="text"
+            android:id="@+id/ticketWarning"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/ticketWarningTIL"
+        android:padding="8dp"
+        android:id="@+id/ticketUseableTIL"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="Ticket Useable"
+            android:textColorHint="@color/colorAccent"
+            android:inputType="number"
+            android:id="@+id/ticketUseable"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

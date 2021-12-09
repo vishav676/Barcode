@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.gson.Gson;
 import com.google.mlkit.vision.barcode.Barcode;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
@@ -49,16 +50,15 @@ import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.ScanningTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.R;
+import com.vishav.barcode.TicketValidator;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentHomeBinding;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
     Switch flash;
     ImageAnalysis imageAnalysis;
     CardView cardView;
-    TextView tvName, tvType, tvNo,tv_lastCheck, errorNum, issue, errorDetail;
+    TextView tvName, tvType,tv_lastCheck, errorNum, issue, errorDetail;
     PreviewView cameraPreview;
     Camera camera;
     Calendar calendar;
@@ -80,8 +80,9 @@ public class HomeFragment extends Fragment {
     ProcessCameraProvider cameraProvider;
     BarcodeScannerOptions options;
     BarcodeScanner detector;
-
+    SharedPreferences preferences;
     private TicketTableVM ticketTableVM;
+    private TextView number;
 
     private int usedTicketsNumber = 0;
     private FragmentHomeBinding root;
@@ -104,19 +105,7 @@ public class HomeFragment extends Fragment {
             root = FragmentHomeBinding.inflate(inflater, container, false);
         cameraPreview = root.CameraViewid;
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
-
-        cardView = root.getRoot().findViewById(R.id.barcode_result);
-        error_cardView = root.getRoot().findViewById(R.id.barcode_error);
-        tvName = cardView.findViewById(R.id.tvname);
-        tvNo = cardView.findViewById(R.id.tvType);
-        ticketNum = root.ticketNumber;
-        ticketType = root.ticketType;
-        tvType = cardView.findViewById(R.id.number);
-        flash = root.toggleFlash;
-        errorNum = root.getRoot().findViewById(R.id.errorNum);
-        issue = root.getRoot().findViewById(R.id.issueTv);
-
-
+        preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         Bundle bundle = getArguments();
         if(bundle != null) {
             ticketList = (List<TicketTable>) bundle.getSerializable("ticketList");
@@ -124,6 +113,23 @@ public class HomeFragment extends Fragment {
             if (event != null)
                 ticketList = ticketTableVM.getAllEventTickets(event.getId());
         }
+        else if(preferences.contains("Event"))
+        {
+            Gson gson = new Gson();
+            String json = preferences.getString("Event","");
+            event = gson.fromJson(json, CheckingTable.class);
+            ticketList = ticketTableVM.getAllEventTickets(event.getId());
+        }
+
+        cardView = root.getRoot().findViewById(R.id.barcode_result);
+        error_cardView = root.getRoot().findViewById(R.id.barcode_error);
+        tvName = cardView.findViewById(R.id.tvname);
+        ticketNum = root.ticketNumber;
+        ticketType = root.ticketType;
+        tvType = cardView.findViewById(R.id.number);
+        flash = root.toggleFlash;
+        errorNum = root.getRoot().findViewById(R.id.errorNum);
+        issue = root.getRoot().findViewById(R.id.issueTv);
 
         usedTicketsNumber = (int) ticketList.stream().filter(x -> x.getTicketUseable() == 0).count();
         tv_lastCheck = root.lastCheck;
@@ -263,61 +269,30 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void validateTicket(Barcode barcode){
         TicketTable ticket = ticketList.stream().filter(x -> x.getTicketNumber().equals(barcode.getRawValue())).findAny().orElse(null);
-        if(ticket != null && ticket.getTicketUseable() > 0){
-            validTicket(ticket);
-        }
-        else if(ticket == null){
-            inValidMessageTicketNotFound(barcode);
-        }
-        else if(ticket.getTicketUseable() <= 0)
-        {
-            inValidMessageAllTriesUsed(barcode);
-        }
-        else if(ticketTableVM.getOneHistory(ticket.getTicketNumber()) != null){
-            inValidMessageAlreadyUsed(barcode);
-        }
-    }
 
-    public void inValidMessageTicketNotFound(Barcode barcode){
-        error_cardView.setVisibility(View.VISIBLE);
-        issue.setText("Ticket Number not in the list");
-        errorNum.setText(barcode.getRawValue());
-        delay(error_cardView);
-    }
+        TicketValidator validator = new TicketValidator(error_cardView,ticketTableVM,
+                getActivity());
+        if (ticket != null && ticket.getTicketUseable() > 0) {
+            int ticketIndex = ticketList.indexOf(ticket);
+            ticket.setTicketUseable(ticket.getTicketUseable() - 1);
+            ticketList.set(ticketIndex,
+                    ticket);
+            usedTicketsNumber++;
+            validator.validTicket(ticket, cardView, tvName);
+            ticketNum.setText(ticket.getTicketNumber() + "( " + ticket.getTicketUseable() + " )");
+            tv_lastCheck.setText(trackHistory());
+            if(event != null) ticketType.setText(event.getCheckingName());
+            else
+                ticketType.setText(getEventName(ticket.getTicketNumber()));
 
-    public void inValidMessageAlreadyUsed(Barcode barcode){
-        error_cardView.setVisibility(View.VISIBLE);
-        issue.setText("Already used");
-        errorNum.setText(barcode.getRawValue());
-        delay(error_cardView);
-    }
-
-    public void inValidMessageAllTriesUsed(Barcode barcode)
-    {
-        error_cardView.setVisibility(View.VISIBLE);
-        issue.setText("All Tries Used");
-        errorNum.setText(barcode.getRawValue());
-        delay(error_cardView);
-    }
-
-    private void validTicket(TicketTable barcode){
-        String time = trackHistory();
-        history(barcode);
-        ticketTableVM.updateTicketToApi(barcode);
-        cardView.setVisibility(View.VISIBLE);
-        delay(cardView);
-        ticketNum.setText(barcode.getTicketNumber() + "( " + barcode.getTicketUseable() + " )");
-        tvName.setText(barcode.getTicketNumber());
-        tv_lastCheck.setText(time);
-        if(event != null) ticketType.setText(event.getCheckingName());
-        else
-            ticketType.setText(getEventName(barcode.getTicketNumber()));
-        int ticketIndex = ticketList.indexOf(barcode);
-        barcode.setTicketUseable(barcode.getTicketUseable() - 1);
-        ticketList.set(ticketIndex,
-                barcode);
-        usedTicketsNumber++;
-        root.checkedInCount.setText(usedTicketsNumber + "/"+ ticketList.size());
+            root.checkedInCount.setText(usedTicketsNumber + "/"+ ticketList.size());
+        } else if (ticket == null) {
+            validator.inValidMessageTicketNotFound(barcode.getRawValue());
+        } else if (ticket.getTicketUseable() <= 0) {
+            validator.inValidMessageAllTriesUsed(ticket);
+        } else if (ticketTableVM.getOneHistory(ticket.getTicketNumber()) != null) {
+            validator.inValidMessageAlreadyUsed(ticket);
+        }
     }
 
     private void delay(){
@@ -346,19 +321,5 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    private void history(TicketTable barcode)
-    {
-        TicketTable ticket = ticketTableVM.getOneTicket(barcode.getTicketNumber());
-        ScanningTable history = new ScanningTable("Success", trackHistory(),
-                false,
-                "Nem",
-                "no",
-                1,
-                event.getId(),
-                ticket.getTicketNumber());
-
-        ticketTableVM.insert(history);
     }
 }

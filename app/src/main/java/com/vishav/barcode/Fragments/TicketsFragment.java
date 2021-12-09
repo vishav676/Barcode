@@ -103,10 +103,6 @@ public class TicketsFragment extends Fragment {
         });
 
 
-        datePickerView.setOnClickListener(view -> {
-            selectDate();
-        });
-
         onDateSetListener = (datePicker, year, month, day) -> {
             month = month+1;
             date = month + "/" + day + "/" + year;

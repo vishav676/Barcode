@@ -1,5 +1,7 @@
 package com.vishav.barcode.Adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.R;
+import com.vishav.barcode.TicketDetailActivity;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class TicketAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -50,6 +54,11 @@ public class TicketAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             itemViewHolder.ticketNumber.setText(ticketTable.getTicketNumber());
             itemViewHolder.ticketName.setText(ticketTable.getTicketCustomerName());
             itemViewHolder.useable.setText("Useable: " + ticketTable.getTicketUseable());
+            itemViewHolder.itemView.setOnClickListener(view -> {
+                Intent intent = new Intent(itemViewHolder.itemView.getContext(), TicketDetailActivity.class);
+                intent.putExtra("ticket", (Serializable) ticketTable);
+                itemViewHolder.itemView.getContext().startActivity(intent);
+            });
         }
     }
 
