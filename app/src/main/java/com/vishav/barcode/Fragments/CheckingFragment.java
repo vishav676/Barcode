@@ -2,6 +2,7 @@ package com.vishav.barcode.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.vishav.barcode.Adapter.CheckingAdapter;
 import com.vishav.barcode.ApiUtils;
 import com.vishav.barcode.Database.Entities.CheckingTable;
@@ -39,7 +41,7 @@ public class CheckingFragment extends Fragment {
     private CheckingAdapter adapter;
     private TicketTableVM ticketTableVM;
     List<CheckingTable> allEvents;
-
+    SharedPreferences preferences;
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -54,6 +56,7 @@ public class CheckingFragment extends Fragment {
         recyclerView = binding.checkingNameRecyclerView;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
+        preferences = getActivity().getPreferences(Context.MODE_PRIVATE);;
         try {
             new ApiUtils(getActivity().getApplication()).getCheckingTicketRelation();
         } catch (IOException e) {
@@ -61,16 +64,13 @@ public class CheckingFragment extends Fragment {
         }
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
         checkingFAB = binding.checkingFAB;
-        ticketTableVM.getAllEvents().observe(getActivity(), new Observer<List<CheckingTable>>() {
-            @Override
-            public void onChanged(List<CheckingTable> checkingTables) {
-                if(checkingTables != null) {
-                    allEvents = checkingTables;
-                    adapter = new CheckingAdapter(checkingTables, mContext);
-                    recyclerView.setAdapter(adapter);
-                }
-                adapter.notifyDataSetChanged();
+        ticketTableVM.getAllEvents().observe(getActivity(), checkingTables -> {
+            if(checkingTables != null) {
+                allEvents = checkingTables;
+                adapter = new CheckingAdapter(checkingTables, mContext);
+                recyclerView.setAdapter(adapter);
             }
+            adapter.notifyDataSetChanged();
         });
 
         HomeFragment homeFragment = new HomeFragment();
@@ -82,6 +82,11 @@ public class CheckingFragment extends Fragment {
             }
             else {
                 CheckingTable selectedEvent = allEvents.get(selectedPosition);
+                SharedPreferences.Editor prefEditor = preferences.edit();
+                Gson gson = new Gson();
+                String json = gson.toJson(selectedEvent);
+                prefEditor.putString("Event", json);
+                prefEditor.apply();
 
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
                 intent.putExtra("event", selectedEvent);

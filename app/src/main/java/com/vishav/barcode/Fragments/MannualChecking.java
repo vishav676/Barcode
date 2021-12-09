@@ -2,10 +2,12 @@ package com.vishav.barcode.Fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +28,7 @@ import com.vishav.barcode.Database.Entities.CheckingTable;
 import com.vishav.barcode.Database.Entities.ScanningTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
 import com.vishav.barcode.R;
+import com.vishav.barcode.TicketValidator;
 import com.vishav.barcode.ViewModels.TicketTableVM;
 import com.vishav.barcode.databinding.FragmentCheckingBinding;
 import com.vishav.barcode.databinding.FragmentMannualCheckingBinding;
@@ -44,8 +47,9 @@ public class MannualChecking extends Fragment {
     private TicketTableVM ticketTableVM;
     CardView cardView;
     CardView error_cardView;
-    TextView tvName, tvType, tvNo, errorNum, issue, errorDetail;
+    TextView tvName, tvNo, errorNum, issue, errorDetail;
     CheckingTable event;
+    RecyclerView rv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,9 +62,6 @@ public class MannualChecking extends Fragment {
         cardView = binding.getRoot().findViewById(R.id.barcode_result);
         tvNo = cardView.findViewById(R.id.number);
         tvName = cardView.findViewById(R.id.tvname);
-        tvType = cardView.findViewById(R.id.tvType);
-
-
 
         error_cardView = binding.getRoot().findViewById(R.id.barcode_error);
         errorNum = error_cardView.findViewById(R.id.errorNum);
@@ -85,97 +86,56 @@ public class MannualChecking extends Fragment {
     }
 
     private void displayTickets() {
-        RecyclerView rv = binding.tickets;
+        rv = binding.tickets;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rv.setLayoutManager(linearLayoutManager);
-        TicketAdapter adapter = new TicketAdapter(ticketTableVM.getAllEventTickets(event.getId()));
+        List<TicketTable> tickets = ticketTableVM.getAllEventTickets(event.getId());
+        TicketAdapter adapter = new TicketAdapter(tickets);
         rv.setAdapter(adapter);
 
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                TicketTable ticket = tickets.get(position);
+                validateTicket(ticket);
+                adapter.notifyDataSetChanged();
+            }
+        };
+        new ItemTouchHelper(callback).attachToRecyclerView(rv);
+    }
+    private void validateTicket(TicketTable ticket) {
+        TicketValidator validator = new TicketValidator(error_cardView,ticketTableVM,
+                getActivity());
+        rv.setVisibility(View.INVISIBLE);
+        if (ticket != null && ticket.getTicketUseable() > 0) {
+            validator.validTicket(ticket, cardView, tvName);
+        } else if (ticket == null) {
+            validator.inValidMessageTicketNotFound(binding.searchTicketET.getText().toString());
+        } else if (ticket.getTicketUseable() <= 0) {
+            validator.inValidMessageAllTriesUsed(ticket);
+        } else if (ticketTableVM.getOneHistory(ticket.getTicketNumber()) != null) {
+            validator.inValidMessageAlreadyUsed(ticket);
+        }
+        delay();
     }
 
-    private void delay(CardView cardView) {
+    private void delay(){
         Timer time = new Timer();
         time.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (getActivity() != null) {
+                if(getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        cardView.setVisibility(View.INVISIBLE);
+                        rv.setVisibility(View.VISIBLE);
                     });
                 }
             }
-        }, 3000);
-    }
-
-    private void validateTicket(TicketTable ticket) {
-        if (ticket != null && ticket.getTicketUseable() > 0) {
-            validTicket(ticket);
-        } else if (ticket == null) {
-            inValidMessageTicketNotFound();
-        } else if (ticket.getTicketUseable() <= 0) {
-            inValidMessageAllTriesUsed(ticket);
-        } else if (ticketTableVM.getOneHistory(ticket.getTicketNumber()) != null) {
-            inValidMessageAlreadyUsed(ticket);
-        }
-    }
-
-    public void inValidMessageTicketNotFound() {
-        error_cardView.setVisibility(View.VISIBLE);
-        issue.setText("Ticket Number not in the list");
-        errorNum.setText(binding.searchTicketET.getText().toString());
-        delay(error_cardView);
-    }
-
-    public void inValidMessageAlreadyUsed(TicketTable ticket) {
-        error_cardView.setVisibility(View.VISIBLE);
-        issue.setText("Already used");
-        errorNum.setText(ticket.getTicketNumber());
-        delay(error_cardView);
-        history("Failed",ticket,"Already Used");
-    }
-
-    public void inValidMessageAllTriesUsed(TicketTable ticket) {
-        error_cardView.setVisibility(View.VISIBLE);
-        issue.setText("All Tries Used");
-        errorNum.setText(ticket.getTicketNumber());
-        delay(error_cardView);
-        history("Failed",ticket,"All Tries Used");
-    }
-
-    private void validTicket(TicketTable barcode) {
-        ticketTableVM.updateTicketUseable(barcode.getTicketUseable() - 1, barcode.getId());
-        cardView.setVisibility(View.VISIBLE);
-        delay(cardView);
-        tvName.setText(barcode.getTicketNumber());
-        history("Success",barcode,"nem");
-    }
-
-    private void history(String status,TicketTable barcode,String issue) {
-        TicketTable ticket = ticketTableVM.getOneTicket(barcode.getTicketNumber());
-        int scanningTimesUsed = 1;
-        CheckingTable event = ticketTableVM.getOneEvent(barcode.getTicketNumber());
-        ScanningTable getHistory = ticketTableVM.getOneHistory(barcode.getTicketNumber());
-        ticketTableVM.updateTicketToApi(barcode);
-        if(getHistory != null)
-        {
-            scanningTimesUsed += getHistory.getScanningTimesUsed();
-        }
-
-        ScanningTable history = new ScanningTable(status, trackHistory(),
-                true,
-                issue,
-                "no",
-                scanningTimesUsed,
-                event.getId(),
-                ticket.getTicketNumber());
-
-        ticketTableVM.insert(history);
-    }
-
-    private String trackHistory()
-    {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        return sd.format(date);
+        },3000);
     }
 }

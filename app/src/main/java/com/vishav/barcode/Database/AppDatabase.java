@@ -19,6 +19,9 @@ import com.vishav.barcode.Database.Entities.ScanningTable;
 import com.vishav.barcode.Database.Entities.TicketListTable;
 import com.vishav.barcode.Database.Entities.TicketTable;
 
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SupportFactory;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,7 +31,7 @@ import java.util.concurrent.Executors;
         ELBCardTable.class,
         ScanningTable.class,
         TicketListTable.class,
-        TicketTable.class}, version = 12)
+        TicketTable.class}, version = 13)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract TicketTableDao ticketTableDao();
     public abstract CheckingTableDao checkingTableDao();
@@ -44,9 +47,12 @@ public abstract class AppDatabase extends RoomDatabase {
         {
             synchronized (AppDatabase.class)
             {
+                final byte[] passphrase = SQLiteDatabase.getBytes(new char[]{'a', 'b', 'c'});
+                final SupportFactory factory = new SupportFactory(passphrase);
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "app_database")
+                            .openHelperFactory(factory)
                             .allowMainThreadQueries()
                             .build();
                 }

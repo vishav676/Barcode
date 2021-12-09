@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.vishav.barcode.ApiUtils;
 import com.vishav.barcode.MainActivity;
@@ -41,8 +42,8 @@ public class MainMenu extends Fragment {
         menu = binding.lvMainMenu;
         application = this;
         String[] menuItems = new String[]{
-                "Easy Checking","Continue Checking", "Start New Checking","Checkings"
-                ,"Tickets Lists", "Cards Lists", "Settings","Add Bulk Tickets"
+                "Start New Checking","Checkings"
+                ,"Tickets Lists","Add Bulk Tickets", "User Management","Continue Checking"
         };
 
         binding.syncDb.setOnClickListener(new View.OnClickListener() {
@@ -62,20 +63,22 @@ public class MainMenu extends Fragment {
         menu.setAdapter(adapter);
 
         menu.setOnItemClickListener((adapterView, view, position, id) -> {
-            if(position == 3)
+            if(position == 1)
             {
-                /*Intent i = new Intent(getActivity(), ScannerActivity.class);
-                startActivity(i);*/
+
                 ((MainActivity)getActivity()).openFragment(new CheckingFragment());
-            }else if(position == 1){
+            }else if(position == 0){
                 ((MainActivity)getActivity()).openFragment(new StartNewChecking());
-            }else if(position == 2){
-                ((MainActivity)getActivity()).openFragment(new StartNewChecking());
-            }else if(position == 7){
+            }else if(position == 3){
                 ((MainActivity)getActivity()).openFragment(new bulkAdd());
-            }else if(position == 4){
+            }else if(position == 2){
                 Intent i = new Intent(getActivity(), TicketListActivity.class);
                 startActivity(i);
+            }else if(position == 4){
+                Toast.makeText(getContext(), "To be implemented", Toast.LENGTH_SHORT).show();
+            }else if(position == 5)
+            {
+                ((MainActivity)getActivity()).openFragment(new HomeFragment());
             }
         });
 

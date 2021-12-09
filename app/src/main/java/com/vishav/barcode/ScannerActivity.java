@@ -40,6 +40,7 @@ public class ScannerActivity extends AppCompatActivity implements BottomNavigati
         ticketTableVm = new ViewModelProvider(this).get(TicketTableVM.class);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         Intent intent = getIntent();
+
         CheckingTable event = (CheckingTable) intent.getSerializableExtra("event");
         List<TicketTable> ticketList = (List<TicketTable>) intent.getSerializableExtra("ticketList");
         HomeFragment homeFragment = new HomeFragment();

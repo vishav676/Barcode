@@ -103,10 +103,6 @@ public class TicketsFragment extends Fragment {
         });
 
 
-        datePickerView.setOnClickListener(view -> {
-            selectDate();
-        });
-
         onDateSetListener = (datePicker, year, month, day) -> {
             month = month+1;
             date = month + "/" + day + "/" + year;
@@ -159,7 +155,7 @@ public class TicketsFragment extends Fragment {
         for (Long ticketListId : ticketListIds){
             tickets.addAll(ticketTableVm.getAllTicketsFromListID(ticketListId));
             CheckingTicketListTableRelationship checkingTicketListTableRelationship = new
-                    CheckingTicketListTableRelationship(ticketListId,newEventId);
+                    CheckingTicketListTableRelationship(newEventId,ticketListId);
             ticketTableVm.insert(checkingTicketListTableRelationship);
         }
         return tickets;

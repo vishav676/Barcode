@@ -27,20 +27,16 @@ public class history extends AppCompatActivity {
         setContentView(binding.getRoot());
         ticketTableVM = new ViewModelProvider(this).get(TicketTableVM.class);
 
-        ticketTableVM.getAllHistory().observe(this, new Observer<List<ScanningTable>>() {
-            @Override
-            public void onChanged(List<ScanningTable> histories) {
-                if (histories != null) {
-                    adapter = new HashMapAdapter(histories);
-                    binding.lvHistory.setAdapter(adapter);
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"No record found",Toast.LENGTH_SHORT).show();
-                }
-                adapter.notifyDataSetChanged();
+        ticketTableVM.getAllHistory().observe(this, histories -> {
+            if (histories != null) {
+                adapter = new HashMapAdapter(histories);
+                binding.lvHistory.setAdapter(adapter);
             }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"No record found",Toast.LENGTH_SHORT).show();
+            }
+            adapter.notifyDataSetChanged();
         });
-
     }
 }

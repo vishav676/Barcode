@@ -6,10 +6,11 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 @Entity(tableName = "TicketListTable")
-public class TicketListTable {
+public class TicketListTable implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @SerializedName("id")

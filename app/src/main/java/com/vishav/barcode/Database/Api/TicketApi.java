@@ -75,7 +75,10 @@ public class TicketApi {
 
     public void updateTicket(TicketTable ticket)
     {
-        ticket.setTicketUseable(ticket.getTicketUseable()-1);
+        if(ticket.getTicketUseable() > 0)
+            ticket.setTicketUseable(ticket.getTicketUseable()-1);
+        else
+            ticket.setTicketUseable(0);
         Call<TicketTable> ticketCall = dataService.updateTicket(ticket.getId(), ticket);
         ticketCall.enqueue(new Callback<TicketTable>() {
             @Override
